@@ -7,6 +7,7 @@
     android:orientation="vertical"
     tools:context=".activity.Main2Activity">
 
+    <include layout="@layout/titlebar"/>
     <FrameLayout
         android:id="@+id/fl_main_content"
         android:layout_weight="1"
