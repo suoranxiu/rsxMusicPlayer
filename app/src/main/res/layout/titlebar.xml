@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.testmusicplayer.view.TitleBar xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:background="#ffffff"
     android:layout_height="55dp">
-
     <TextView
         android:id="@+id/tv_search"
-        android:drawableLeft="@drawable/tv_search_drawable_selector"
-        android:background="@drawable/tv_search_bg_selector"
-        android:textColor="@drawable/tv_search_textcolor_selector"
-        android:drawablePadding="5dp"
-        android:textSize="20dp"
-        android:layout_gravity="center_vertical"
-        android:gravity="center_vertical"
-        android:layout_weight="1"
-        android:clickable="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Search Music"/>
+        android:layout_height="33dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/tv_search_bg_selector"
+        android:clickable="true"
+        android:drawableLeft="@drawable/tv_search_drawable_selector"
+        android:drawablePadding="5dp"
+        android:gravity="center_vertical"
+        android:text="Search Music"
+        android:textColor="@drawable/tv_search_textcolor_selector"
+        android:textSize="17dp" />
 
     <ImageView
+        android:id="@+id/iv_music_player"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src =""/>
+        android:layout_marginLeft ="5dp"
+        android:layout_marginRight="8dp"
+        android:layout_gravity="center_vertical"
+        android:src ="@drawable/music_player_icon2"/>
 
-</LinearLayout>
+</com.example.testmusicplayer.view.TitleBar>

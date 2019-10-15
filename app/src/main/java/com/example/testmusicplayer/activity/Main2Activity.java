@@ -94,7 +94,7 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
      */
     private BasePager getBasePager() {
         BasePager basePager = basePagers.get(position);
-        if(basePager != null && basePager.isInitData){
+        if(basePager != null && !basePager.isInitData){
             basePager.initDate();
             basePager.isInitData = true;
         }
