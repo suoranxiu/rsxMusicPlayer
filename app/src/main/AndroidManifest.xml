@@ -15,13 +15,13 @@
 <!--        <activity android:name=".Activity.Main2Activity" android:launchMode="singleTask">//单例模式，只启动一次-->
         <activity android:name=".activity.Main2Activity">
         </activity>
-
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.AudioPlayerActivity"></activity>
     </application>
 
 </manifest>
