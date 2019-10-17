@@ -1,6 +1,6 @@
 package com.example.testmusicplayer.domain;
 
-import androidx.annotation.NonNull;
+import android.graphics.Bitmap;
 
 /**
  * 代表一个音频
@@ -13,17 +13,19 @@ public class MediaItem {
     private String album;
     private long duration;
     private long size;
+    private Bitmap albumArt;
 
     public MediaItem() {
     }
 
-    public MediaItem(String name, String data, String artist, String album, long duration, long size) {
+    public MediaItem(String name, String data, String artist, String album, long duration, long size, Bitmap albumArt) {
         this.name = name;
         this.data = data;
         this.artist = artist;
         this.album = album;
         this.duration = duration;
         this.size = size;
+        this.albumArt = albumArt;
     }
 
     public String getName() {
@@ -84,5 +86,13 @@ public class MediaItem {
                 ", duration=" + duration +
                 ", size=" + size +
                 '}';
+    }
+
+    public Bitmap getAlbumArt() {
+        return albumArt;
+    }
+
+    public void setAlbumArt(Bitmap albumArt) {
+        this.albumArt = albumArt;
     }
 }

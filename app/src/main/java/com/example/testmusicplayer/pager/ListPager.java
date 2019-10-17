@@ -11,6 +11,9 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,6 +23,7 @@ import androidx.annotation.NonNull;
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.base.BasePager;
 import com.example.testmusicplayer.domain.MediaItem;
+import com.example.testmusicplayer.utils.AlbumArt;
 import com.example.testmusicplayer.utils.Grant;
 
 import java.util.ArrayList;
@@ -30,8 +34,8 @@ import java.util.ArrayList;
 public class ListPager extends BasePager {
 
     private ListView listView;
-    private ProgressBar progressBar;
-    private TextView textView;
+    private ProgressBar pb_loading;
+    private TextView tv_noMusic;
 
     private Handler handler = new Handler(){
         @Override
@@ -39,9 +43,14 @@ public class ListPager extends BasePager {
             super.handleMessage(msg);
             if (mediaItems != null && mediaItems.size()>0){
 
-            }else {
+                //设置适配器
+                BaseAdapter adapter = new ListPagerAdapter();
+                listView.setAdapter(adapter);
 
+            }else {
+                tv_noMusic.setVisibility(View.VISIBLE);
             }
+            pb_loading.setVisibility(View.GONE);
         }
     };
 
@@ -59,8 +68,8 @@ public class ListPager extends BasePager {
     public View initView() {
         View view = View.inflate(context, R.layout.list_pager,null);
         listView = (ListView)view.findViewById(R.id.lv_lp_music_list);
-        textView = (TextView)view.findViewById(R.id.tv_noMusic);
-        progressBar = (ProgressBar)view.findViewById(R.id.pb_loading);
+        tv_noMusic = (TextView)view.findViewById(R.id.tv_noMusic);
+        pb_loading = (ProgressBar)view.findViewById(R.id.pb_loading);
         return view;
     }
 
@@ -95,11 +104,12 @@ public class ListPager extends BasePager {
                             MediaStore.Audio.Media.ARTIST,
                             MediaStore.Audio.Media.ALBUM,
                             MediaStore.Audio.Media.DATA,//音乐文件的绝对路径
+                            MediaStore.Audio.Media.ALBUM_ID//获取专辑ID
                     };
 
                     Cursor cursor = resolver.query(uri,objs,null,null,null);
                     if(cursor != null){
-                        do{
+                        while (cursor.moveToNext()){
                             MediaItem mediaItem = new MediaItem();
 
                             mediaItems.add(mediaItem);
@@ -122,7 +132,10 @@ public class ListPager extends BasePager {
                             String data = cursor.getString(5);
                             mediaItem.setData(data);
 
-                        }while (cursor.moveToNext());
+                            int albumId = cursor.getInt(6);
+                            AlbumArt albumArt = new AlbumArt(context,albumId);
+                            mediaItem.setAlbumArt(albumArt.getAlbumBmp());
+                        }
                         cursor.close();
                     }
 
@@ -132,5 +145,51 @@ public class ListPager extends BasePager {
 
             }
         }.start();
+    }
+    class ListPagerAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            return mediaItems.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mediaItems.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
+            if(convertView == null){
+                convertView = View.inflate(context,R.layout.item_list_pager,null);
+                viewHolder = new ViewHolder();
+                viewHolder.iv_album_icon_listPager = (ImageView) convertView.findViewById(R.id.iv_album_icon_listPager);
+                viewHolder.tv_name_listPager = (TextView)convertView.findViewById(R.id.tv_name_listPager);
+                viewHolder.tv_artist_listPager = (TextView)convertView.findViewById(R.id.tv_artist_listPager);
+                convertView.setTag(viewHolder);
+            }else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+            MediaItem mediaItem = mediaItems.get(position);
+            String fileName = mediaItem.getName();
+            String songName = fileName.substring(fileName.lastIndexOf("-")+2,fileName.lastIndexOf(".mp3"));
+            viewHolder.tv_name_listPager.setText(songName);
+            viewHolder.tv_artist_listPager.setText(mediaItem.getArtist());
+            viewHolder.iv_album_icon_listPager.setImageBitmap(mediaItem.getAlbumArt());
+            return convertView;
+        }
+    }
+    static class ViewHolder{
+        ImageView iv_album_icon_listPager;
+        TextView tv_name_listPager;
+        TextView tv_artist_listPager;
+
+
     }
 }

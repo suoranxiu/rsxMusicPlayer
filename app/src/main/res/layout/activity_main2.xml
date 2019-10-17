@@ -26,24 +26,24 @@
             android:drawableTop="@drawable/rb_list_drawable_selector"
             style="@style/bottom_tag_style"
             android:layout_weight="1"
-            android:text="歌曲列表"/>
+            android:text="MusicList"/>
         <RadioButton
             android:id="@+id/rb_album"
             android:drawableTop="@drawable/rb_album_drawable_selector"
             style="@style/bottom_tag_style"
             android:layout_weight="1"
-            android:text="专辑"/>
+            android:text="Album"/>
         <RadioButton
             android:id="@+id/rb_artist"
             android:drawableTop="@drawable/rb_artist_drawable_selector"
             style="@style/bottom_tag_style"
             android:layout_weight="1"
-            android:text="艺术家"/>
+            android:text="Artist"/>
         <RadioButton
             android:id="@+id/rb_setting"
             android:drawableTop="@drawable/rb_setting_drawable_selector"
             style="@style/bottom_tag_style"
             android:layout_weight="1"
-            android:text="设置"/>
+            android:text="Setting"/>
     </RadioGroup>
 </LinearLayout>
