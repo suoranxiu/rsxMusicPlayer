@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -106,10 +107,16 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         public int getPlayMode() throws RemoteException {
             return musicPlayerService.getPlayMode();
         }
+
+        @Override
+        public boolean isPlaying() throws RemoteException {
+            return musicPlayerService.isPlaying();
+        }
     };
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.e("Tag","Creating Service");
         getDataFromLocal();
     }
 
@@ -124,60 +131,55 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     private void getDataFromLocal() {
 
         mediaItems = new ArrayList<>();
+        ContentResolver resolver = getContentResolver();
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] objs = {
+                MediaStore.Audio.Media.DISPLAY_NAME,
+                MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.SIZE,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.DATA,//音乐文件的绝对路径
+                MediaStore.Audio.Media.ALBUM_ID//获取专辑ID
+        };
 
-        new Thread(){
-            @Override
-            public void run() {
-                super.run();
+        Cursor cursor = resolver.query(uri,objs,null,null,null);
+        if(cursor != null){
+            while (cursor.moveToNext()){
+                MediaItem mediaItem = new MediaItem();
 
-                ContentResolver resolver = getContentResolver();
-                Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                String[] objs = {
-                        MediaStore.Audio.Media.DISPLAY_NAME,
-                        MediaStore.Audio.Media.DURATION,
-                        MediaStore.Audio.Media.SIZE,
-                        MediaStore.Audio.Media.ARTIST,
-                        MediaStore.Audio.Media.ALBUM,
-                        MediaStore.Audio.Media.DATA,//音乐文件的绝对路径
-                        MediaStore.Audio.Media.ALBUM_ID//获取专辑ID
-                };
+                mediaItems.add(mediaItem);
 
-                Cursor cursor = resolver.query(uri,objs,null,null,null);
-                if(cursor != null){
-                    while (cursor.moveToNext()){
-                        MediaItem mediaItem = new MediaItem();
+                String name = cursor.getString(0);
+                mediaItem.setName(name);
 
-                        mediaItems.add(mediaItem);
+                long duration = cursor.getLong(1);
+                mediaItem.setDuration(duration);
 
-                        String name = cursor.getString(0);
-                        mediaItem.setName(name);
+                long size = cursor.getLong(2);
+                mediaItem.setSize(size);
 
-                        long duration = cursor.getLong(1);
-                        mediaItem.setDuration(duration);
+                String artist = cursor.getString(3);
+                mediaItem.setArtist(artist);
 
-                        long size = cursor.getLong(2);
-                        mediaItem.setSize(size);
+                String album = cursor.getString(4);
+                mediaItem.setAlbum(album);
 
-                        String artist = cursor.getString(3);
-                        mediaItem.setArtist(artist);
+                String data = cursor.getString(5);
+                mediaItem.setData(data);
 
-                        String album = cursor.getString(4);
-                        mediaItem.setAlbum(album);
-
-                        String data = cursor.getString(5);
-                        mediaItem.setData(data);
-
-                        int albumId = cursor.getInt(6);
-                        AlbumArt albumArt = new AlbumArt(MusicPlayerService.this,albumId);
-                        mediaItem.setAlbumArt(albumArt.getAlbumBmp());
-                    }
-                    cursor.close();
-                }
-
-
+                int albumId = cursor.getInt(6);
+                AlbumArt albumArt = new AlbumArt(MusicPlayerService.this,albumId);
+                mediaItem.setAlbumArt(albumArt.getAlbumBmp());
             }
-        }.start();
+            Log.e("num of songs"," "+mediaItems.size());
+            cursor.close();
+        }
+
+
     }
+
+
 
     /**
      * 根据音乐列表位置，打开对应的音频文件
@@ -186,17 +188,15 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     private void openAudio(int position){
         this.position = position;
         if(mediaItems != null && mediaItems.size() != 0){
-
+            Log.e("position",""+position);
+            Log.e("opening music",mediaItems.size()+"songs");
             mediaItem = mediaItems.get(position);
             if(mediaPlayer != null){
                 mediaPlayer.release();
                 mediaPlayer.reset();
             }
-
             mediaPlayer = new MediaPlayer();
-
             try {
-
                 mediaPlayer.setOnPreparedListener(this);
                 mediaPlayer.setOnCompletionListener(this);
                 mediaPlayer.setOnErrorListener(this);
@@ -287,6 +287,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     private  int getPlayMode(){
         return 0;
     }
+
+    private boolean isPlaying(){
+        return mediaPlayer.isPlaying();
+    }
+
 
     //播放器监听处理
     @Override

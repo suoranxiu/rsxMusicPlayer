@@ -82,7 +82,7 @@
                 android:layout_weight="1"
                 android:layout_marginLeft="50dp"
                 android:layout_marginRight="50dp"
-                android:background="@drawable/btn_start_playing_selector"/>
+                android:background="@drawable/btn_pause_playing_selector"/>
             <Button
                 android:id="@+id/btn_next_playing"
                 android:layout_width="50dp"

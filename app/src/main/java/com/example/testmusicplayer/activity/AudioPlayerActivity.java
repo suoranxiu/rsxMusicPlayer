@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,7 +24,7 @@ import com.example.testmusicplayer.service.MusicPlayerService;
 
 import java.util.ArrayList;
 
-public class AudioPlayerActivity extends Activity {
+public class AudioPlayerActivity extends Activity implements View.OnClickListener {
 
     private View view_return_line;
     private ImageView iv_album_playing;
@@ -50,6 +51,7 @@ public class AudioPlayerActivity extends Activity {
          */
         @Override
         public void onServiceConnected(ComponentName name, IBinder iBinder) {
+            Log.e("Tag","onServiceConnected!");
             iService = IMusicPlayerService.Stub.asInterface(iBinder);
             if(iService != null){
                 try {
@@ -82,6 +84,7 @@ public class AudioPlayerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
         getData();
+        findViews();
         bindStartService();
 
     }
@@ -95,5 +98,38 @@ public class AudioPlayerActivity extends Activity {
 
     private void getData() {
         position = getIntent().getIntExtra("position",0);
+    }
+    public void findViews(){
+        btn_start_playing = (Button)findViewById(R.id.btn_start_playing);
+        btn_last_playing = (Button)findViewById(R.id.btn_last_playing);
+        btn_next_playing = (Button)findViewById(R.id.btn_next_playing);
+
+        btn_start_playing.setOnClickListener(this);
+        btn_last_playing.setOnClickListener(this);
+        btn_next_playing.setOnClickListener(this);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v == btn_start_playing){
+            if(iService != null){
+                try {
+                    if(iService.isPlaying()){
+                        iService.pause();
+                        btn_start_playing.setBackgroundResource(R.drawable.btn_start_playing_selector);
+                    }else {
+                        iService.start();
+                        btn_start_playing.setBackgroundResource(R.drawable.btn_pause_playing_selector);
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }else if(v == btn_last_playing){
+
+        }else if(v == btn_next_playing){
+
+        }
     }
 }

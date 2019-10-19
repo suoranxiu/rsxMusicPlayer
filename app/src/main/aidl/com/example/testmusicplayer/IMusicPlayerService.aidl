@@ -65,5 +65,5 @@ interface IMusicPlayerService {
     void setPlayMode(int playMode);
     int getPlayMode();
 
-
+    boolean isPlaying();
 }
