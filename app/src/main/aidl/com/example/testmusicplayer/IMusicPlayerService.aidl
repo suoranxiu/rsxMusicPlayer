@@ -22,6 +22,7 @@ interface IMusicPlayerService {
      * 暂停
      */
     void pause();
+    void stop();
     /**
      * 得到当前音频的播放进度
      * @return
