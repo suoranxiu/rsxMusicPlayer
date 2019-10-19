@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 public class MusicPlayerService extends Service {
 
+    public static final String OPENAUDIO = "com.example.musicplayer_OPENAUDIO";
 
 
     @Override

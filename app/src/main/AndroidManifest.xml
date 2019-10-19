@@ -21,8 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.AudioPlayerActivity"></activity>
+        <activity android:name=".activity.AudioPlayerActivity" android:launchMode="singleTask"></activity>
         <service android:name=".service.MusicPlayerService">
+            <intent-filter>
+                <action android:name="com.example.musicplayer_OPENAUDIO"/>
+            </intent-filter>
         </service>
     </application>
 
