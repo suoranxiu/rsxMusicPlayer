@@ -91,6 +91,7 @@ public class ListPager extends BasePager implements AdapterView.OnItemClickListe
          */
         Intent intent = new Intent(context, AudioPlayerActivity.class);
         intent.putExtra("position",position);
+        context.startActivity(intent);
 
     }
 

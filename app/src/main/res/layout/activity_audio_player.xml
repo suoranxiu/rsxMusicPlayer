@@ -41,7 +41,7 @@
             android:textSize="16sp"
             android:text="Artist"/>
         <SeekBar
-            android:id="@+id/pb_playing"
+            android:id="@+id/sb_playing"
             android:layout_marginTop="13dp"
             android:layout_width="320dp"
             android:layout_height="2dp"/>
@@ -101,6 +101,7 @@
                 android:layout_marginRight="6dp"
                 android:src="@drawable/volume_icon"/>
             <SeekBar
+                android:id="@+id/sb_volume"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:layout_gravity="center_vertical"
@@ -111,12 +112,14 @@
         android:layout_width="320dp"
         android:layout_height="wrap_content">
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/iv_random_playing"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/random_icon"/>
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/iv_loop_playing"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentEnd="true"
             android:src="@drawable/loop_icon"/>
     </RelativeLayout>
