@@ -4,15 +4,83 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.IBinder;
+import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
+
+import com.example.testmusicplayer.IMusicPlayerService;
 
 
 public class MusicPlayerService extends Service {
 
     public static final String OPENAUDIO = "com.example.musicplayer_OPENAUDIO";
 
+    private IMusicPlayerService.Stub stub = new IMusicPlayerService.Stub() {
+        @Override
+        public void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat, double aDouble, String aString) throws RemoteException {
 
+        }
+
+        @Override
+        public void openAudio(int position) throws RemoteException {
+
+        }
+
+        @Override
+        public void start() throws RemoteException {
+
+        }
+
+        @Override
+        public void pause() throws RemoteException {
+
+        }
+
+        @Override
+        public int getCurrentProgress() throws RemoteException {
+            return 0;
+        }
+
+        @Override
+        public int getDuration() throws RemoteException {
+            return 0;
+        }
+
+        @Override
+        public String getMusicName() throws RemoteException {
+            return null;
+        }
+
+        @Override
+        public String getArtist() throws RemoteException {
+            return null;
+        }
+
+        @Override
+        public Bitmap getAlnumArt() throws RemoteException {
+            return null;
+        }
+
+        @Override
+        public void last() throws RemoteException {
+
+        }
+
+        @Override
+        public void next() throws RemoteException {
+
+        }
+
+        @Override
+        public void setPlayMode(int playMode) throws RemoteException {
+
+        }
+
+        @Override
+        public int getPlayMode() throws RemoteException {
+            return 0;
+        }
+    };
     @Override
     public void onCreate() {
         super.onCreate();
