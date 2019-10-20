@@ -47,7 +47,7 @@ interface IMusicPlayerService {
      * 得到当前音频的专辑封面
      * @return
      */
-    Bitmap getAlnumArt();
+    Bitmap getAlbumArt();
 
     /**
      * 播放上一首

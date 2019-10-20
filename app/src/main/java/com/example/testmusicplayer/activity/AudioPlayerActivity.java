@@ -1,9 +1,11 @@
 package com.example.testmusicplayer.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -40,6 +42,7 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
     private ImageView iv_random_playing;
     private ImageView iv_loop_playing;
 
+    private MyReceiver receiver;
 
     private  int position;
     private IMusicPlayerService iService;//服务的代理类，通过它可以调用服务类方法
@@ -83,11 +86,30 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
-        getData();
+        initData();
         findViews();
+        getData();
         bindStartService();
 
     }
+
+    @Override
+    protected void onDestroy() {
+        if(receiver != null){
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
+        super.onDestroy();
+    }
+
+    private void initData() {
+        //注册广播
+        receiver = new MyReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MusicPlayerService.OPENAUDIO);
+        registerReceiver(receiver,intentFilter);
+    }
+
 
     private void bindStartService() {
         Intent intent = new Intent(this, MusicPlayerService.class);
@@ -104,11 +126,19 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
         btn_last_playing = (Button)findViewById(R.id.btn_last_playing);
         btn_next_playing = (Button)findViewById(R.id.btn_next_playing);
 
+        tv_name_playing = (TextView)findViewById(R.id.tv_name_playing);
+        tv_artist_playing = (TextView)findViewById(R.id.tv_artist_playing);
+        iv_album_playing = (ImageView) findViewById(R.id.iv_album_playing);
+        tv_time_playing = (TextView)findViewById(R.id.tv_time_playing);
+        tv_time_duration = (TextView)findViewById(R.id.tv_time_duration);
+
+
         btn_start_playing.setOnClickListener(this);
         btn_last_playing.setOnClickListener(this);
         btn_next_playing.setOnClickListener(this);
 
     }
+
 
     @Override
     public void onClick(View v) {
@@ -130,6 +160,25 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
 
         }else if(v == btn_next_playing){
 
+        }
+    }
+
+    class MyReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            showViewData();
+        }
+    }
+
+    private void showViewData() {
+
+        try {
+            tv_name_playing.setText(iService.getMusicName());
+            tv_artist_playing.setText(iService.getArtist());
+            iv_album_playing.setImageBitmap(iService.getAlbumArt());
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 }

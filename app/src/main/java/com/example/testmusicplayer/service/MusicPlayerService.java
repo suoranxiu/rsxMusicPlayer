@@ -84,8 +84,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         }
 
         @Override
-        public Bitmap getAlnumArt() throws RemoteException {
-            return musicPlayerService.getAlnumArt();
+        public Bitmap getAlbumArt() throws RemoteException {
+            return musicPlayerService.getAlbumArt();
         }
 
         @Override
@@ -247,21 +247,23 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      * @return
      */
     private String getMusicName(){
-        return null;
+        String fileName  = mediaItem.getName();
+        String songName = fileName.substring(fileName.lastIndexOf("-")+2,fileName.lastIndexOf("."));
+        return songName;
     }
     /**
      * 得到当前音频的艺术家
      * @return
      */
     private String getArtist(){
-        return null;
+        return mediaItem.getArtist();
     }
     /**
      * 得到当前音频的专辑封面
      * @return
      */
-    private Bitmap getAlnumArt(){
-        return null;
+    private Bitmap getAlbumArt(){
+        return mediaItem.getAlbumArt();
     }
 
     /**
@@ -296,7 +298,14 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     //播放器监听处理
     @Override
     public void onPrepared(MediaPlayer mp) {
+        //通知activity来获取信息 --- 发送广播
+        notifyChange(MusicPlayerService.OPENAUDIO);
         start();
+    }
+
+    private void notifyChange(String action) {
+        Intent intent = new Intent(action);
+        sendBroadcast(intent);
     }
 
     @Override
