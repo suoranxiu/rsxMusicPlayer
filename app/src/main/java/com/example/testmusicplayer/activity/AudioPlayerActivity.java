@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
@@ -17,12 +19,14 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.testmusicplayer.IMusicPlayerService;
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.service.MusicPlayerService;
+import com.example.testmusicplayer.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -42,9 +46,12 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
     private ImageView iv_random_playing;
     private ImageView iv_loop_playing;
 
+    private Utils utils;
     private MyReceiver receiver;
 
+
     private  int position;
+    private static final int PROGRESS = 1;
     private IMusicPlayerService iService;//服务的代理类，通过它可以调用服务类方法
     private ServiceConnection con = new ServiceConnection() {
         /**
@@ -82,12 +89,13 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
     };
 
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
-        initData();
         findViews();
+        initData();
         getData();
         bindStartService();
 
@@ -96,6 +104,7 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
     @Override
     protected void onDestroy() {
         if(receiver != null){
+            handler.removeMessages(PROGRESS);
             unregisterReceiver(receiver);
             receiver = null;
         }
@@ -129,8 +138,12 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
         tv_name_playing = (TextView)findViewById(R.id.tv_name_playing);
         tv_artist_playing = (TextView)findViewById(R.id.tv_artist_playing);
         iv_album_playing = (ImageView) findViewById(R.id.iv_album_playing);
+
         tv_time_playing = (TextView)findViewById(R.id.tv_time_playing);
         tv_time_duration = (TextView)findViewById(R.id.tv_time_duration);
+
+        sb_playing = (SeekBar)findViewById(R.id.sb_playing);
+        sb_volume = (SeekBar)findViewById(R.id.sb_volume);
 
 
         btn_start_playing.setOnClickListener(this);
@@ -177,8 +190,46 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
             tv_name_playing.setText(iService.getMusicName());
             tv_artist_playing.setText(iService.getArtist());
             iv_album_playing.setImageBitmap(iService.getAlbumArt());
+            sb_playing.setMax(iService.getDuration());
+
+            handler.sendEmptyMessage(PROGRESS);
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case PROGRESS:
+                    try {
+                        //获取当前的进度
+                        int curProgress = iService.getCurrentProgress();
+                        //设置在播放页面的进程SeekBar上
+                        sb_playing.setProgress(curProgress);
+                        Log.e("curProgress"," "+utils.stringForTime(curProgress));
+                        Log.e("max"," "+utils.stringForTime(iService.getDuration()));
+                        //时间更新
+//                        tv_time_playing.setText(utils.stringForTime(curProgress));
+//                        tv_time_duration.setText(utils.stringForTime(iService.getDuration()));
+                        tv_time_playing.setText("....");
+                        tv_time_duration.setText("max");
+                        //每秒更新一次
+                        handler.removeMessages(PROGRESS);
+                        handler.sendEmptyMessageDelayed(PROGRESS,1000);
+
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
+            }
+
+
+
+        }
+    };
 }

@@ -64,7 +64,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
 
         @Override
         public int getCurrentProgress() throws RemoteException {
-
             return musicPlayerService.getCurrentProgress();
         }
 
@@ -192,7 +191,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
             Log.e("opening music",mediaItems.size()+"songs");
             mediaItem = mediaItems.get(position);
             if(mediaPlayer != null){
-                mediaPlayer.release();
+//                mediaPlayer.release();
                 mediaPlayer.reset();
             }
             mediaPlayer = new MediaPlayer();
@@ -226,21 +225,21 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
 
     }
     private void stop(){
-
+        mediaPlayer.stop();
     }
     /**
      * 得到当前音频的播放进度
      * @return
      */
     private int getCurrentProgress(){
-        return 0;
+        return mediaPlayer.getCurrentPosition();
     }
     /**
      * 得到当前音频的总时长
      * @return
      */
     private int getDuration(){
-        return 0;
+        return mediaPlayer.getDuration();
     }
     /**
      * 得到当前音频的名字
