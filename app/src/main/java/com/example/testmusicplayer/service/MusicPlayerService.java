@@ -1,6 +1,9 @@
 package com.example.testmusicplayer.service;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -17,6 +20,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.testmusicplayer.IMusicPlayerService;
+import com.example.testmusicplayer.R;
+import com.example.testmusicplayer.activity.AudioPlayerActivity;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
 import com.example.testmusicplayer.utils.Grant;
@@ -32,6 +37,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     private  int position;
     private MediaItem mediaItem;
     private MediaPlayer mediaPlayer;
+
+    private NotificationManager notifyManager;
 
     private IMusicPlayerService.Stub stub = new IMusicPlayerService.Stub() {
 
@@ -196,7 +203,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
             Log.e("opening music",mediaItems.size()+"songs");
             mediaItem = mediaItems.get(position);
             if(mediaPlayer != null){
-//                mediaPlayer.release();
+
                 mediaPlayer.reset();
             }
             mediaPlayer = new MediaPlayer();
@@ -221,13 +228,26 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     private void start(){
 
         mediaPlayer.start();
+
+        //当正在播放歌曲的时候，在状态栏显示当前正在播放的信息，点击此，可以进入播放界面activity
+        notifyManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Intent intent = new Intent(this,AudioPlayerActivity.class);
+        intent.putExtra("Notification",true);//用于区分是否来自状态栏
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification notification = new Notification.Builder(this)
+                .setSmallIcon(R.drawable.music_player_icon2_press)
+                .setContentTitle("SRX player")
+                .setContentText("Playing: "+getMusicName())
+                .setContentIntent(pendingIntent)
+                .build();
+        notifyManager.notify(1,notification);
     }
     /**
      * 暂停
      */
     private void pause(){
         mediaPlayer.pause();
-
+        notifyManager.cancel(1);
     }
     private void stop(){
         mediaPlayer.stop();

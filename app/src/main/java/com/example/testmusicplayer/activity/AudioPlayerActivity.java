@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.database.ContentObserver;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 
 public class AudioPlayerActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
+
     private View view_return_line;
     private ImageView iv_album_playing;
     private TextView tv_name_playing;
@@ -48,10 +51,14 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
 
     private Utils utils = new Utils();
     private MyReceiver receiver;
+    private AudioManager audioManager;
 
+    private int curVolume;
+    private int maxVolume;
 
     private  int position;
     private static final int PROGRESS = 1;
+    private boolean notification;
     private IMusicPlayerService iService;//服务的代理类，通过它可以调用服务类方法
     private ServiceConnection con = new ServiceConnection() {
         /**
@@ -65,7 +72,12 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
             iService = IMusicPlayerService.Stub.asInterface(iBinder);
             if(iService != null){
                 try {
-                    iService.openAudio(position);
+                    if(!notification){
+                        iService.openAudio(position);
+                    }else {
+                        //此处是主线程
+                        showViewData();
+                    }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -123,17 +135,32 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
         intentFilter.addAction(MusicPlayerService.OPENAUDIO);
         registerReceiver(receiver,intentFilter);
     }
+    public void initVolume(){
+        audioManager = (AudioManager)getSystemService(AUDIO_SERVICE);//获取媒体系统服务
+
+        curVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+//        Log.e("cur",curVolume+"");
+//        Log.e("max",maxVolume+"");
+        sb_volume.setMax(maxVolume);//设置最大音量
+        sb_volume.setProgress(curVolume);//当前的媒体音量
+
+    }
 
 
     private void bindStartService() {
         Intent intent = new Intent(this, MusicPlayerService.class);
-        intent.setAction("com.example.musicplayer_OPENAUDIO");
+        intent.setAction(MusicPlayerService.OPENAUDIO);
         bindService(intent,con, Context.BIND_AUTO_CREATE);
         startService(intent);//不至于实例化多个服务
     }
 
     private void getData() {
-        position = getIntent().getIntExtra("position",0);
+        notification = getIntent().getBooleanExtra("Notification",false);
+        if(!notification){
+            position = getIntent().getIntExtra("position",0);
+        }
+        //进入播放页面如果不点击选择，则默认position 是 0
     }
     public void findViews(){
         btn_start_playing = (Button)findViewById(R.id.btn_start_playing);
@@ -155,6 +182,8 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
         btn_last_playing.setOnClickListener(this);
         btn_next_playing.setOnClickListener(this);
         sb_playing.setOnSeekBarChangeListener(this);
+        sb_volume.setOnSeekBarChangeListener(this);
+
 
     }
 
@@ -184,18 +213,31 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if(fromUser){
-            //拖动进度
-            try {
-                iService.seekTo(progress);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        if (seekBar == sb_playing){
+            if(fromUser){
+                //拖动进度
+                try {
+                    iService.seekTo(progress);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
+        }else if(seekBar == sb_volume){
+            if(fromUser){
+//                Log.e("cur",progress+"");
+                audioManager.setStreamVolume(3, progress, 0);
+                sb_volume.setProgress(progress);
+                curVolume = progress;
+            }
+
+
         }
+
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
+
 
     }
 
@@ -209,7 +251,9 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
 
         @Override
         public void onReceive(Context context, Intent intent) {
+
             showViewData();
+
         }
     }
 
@@ -220,6 +264,8 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
             tv_artist_playing.setText(iService.getArtist());
             iv_album_playing.setImageBitmap(iService.getAlbumArt());
             sb_playing.setMax(iService.getDuration());
+
+            initVolume();
 
             handler.sendEmptyMessage(PROGRESS);
 
@@ -252,10 +298,8 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
-
                     break;
             }
-
 
 
         }

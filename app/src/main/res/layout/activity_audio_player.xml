@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/view_return_line"
-        android:layout_width="100dp"
-        android:layout_height="3.5dp"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/return_line_selector"
-        android:layout_alignParentTop="true"/>
+<!--    <View-->
+<!--        android:id="@+id/view_return_line"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="3.5dp"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:background="@drawable/return_line_selector"-->
+<!--        android:layout_alignParentTop="true"/>-->
     <ImageView
         android:id="@+id/iv_album_playing"
         android:layout_width="250dp"
