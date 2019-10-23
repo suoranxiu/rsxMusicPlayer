@@ -7,11 +7,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 
 import com.example.testmusicplayer.R;
@@ -24,10 +27,12 @@ import com.example.testmusicplayer.utils.ReplaceFragment;
 
 import java.util.ArrayList;
 
-public class Main2Activity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener {
+public class Main2Activity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
     private FrameLayout fl_main_content;
     private RadioGroup rg_bottom_tag;
+    private ImageView iv_music_player;
+    private boolean isPlaying = true;
 
     /**
      * 页面的集合
@@ -43,6 +48,7 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
 
         fl_main_content = (FrameLayout)findViewById(R.id.fl_main_content);
         rg_bottom_tag = (RadioGroup)findViewById(R.id.rg_bottom_tag);
+        iv_music_player = (ImageView)findViewById(R.id.iv_music_player);
 
 
         basePagers = new ArrayList<>();
@@ -53,6 +59,8 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
         rg_bottom_tag.setOnCheckedChangeListener(this);
 
         rg_bottom_tag.check(R.id.rb_list);//默认选中播放列表
+
+        iv_music_player.setOnClickListener(this);
     }
 
     @Override
@@ -99,5 +107,14 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
             basePager.isInitData = true;
         }
         return basePager;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(isPlaying){
+            Intent intent = new Intent(this,AudioPlayerActivity.class);
+            intent.putExtra("Notification",true);
+            startActivity(intent);
+        }
     }
 }
