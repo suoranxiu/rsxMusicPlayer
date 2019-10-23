@@ -30,7 +30,7 @@ import com.example.testmusicplayer.utils.Utils;
 
 import java.util.ArrayList;
 
-public class AudioPlayerActivity extends Activity implements View.OnClickListener {
+public class AudioPlayerActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
     private View view_return_line;
     private ImageView iv_album_playing;
@@ -46,7 +46,7 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
     private ImageView iv_random_playing;
     private ImageView iv_loop_playing;
 
-    private Utils utils;
+    private Utils utils = new Utils();
     private MyReceiver receiver;
 
 
@@ -107,6 +107,11 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
             handler.removeMessages(PROGRESS);
             unregisterReceiver(receiver);
             receiver = null;
+            Log.e("APActivity","Activity destroy!");
+        }
+        if (con != null){
+            unbindService(con);
+            con = null;
         }
         super.onDestroy();
     }
@@ -149,6 +154,7 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
         btn_start_playing.setOnClickListener(this);
         btn_last_playing.setOnClickListener(this);
         btn_next_playing.setOnClickListener(this);
+        sb_playing.setOnSeekBarChangeListener(this);
 
     }
 
@@ -174,6 +180,29 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
         }else if(v == btn_next_playing){
 
         }
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if(fromUser){
+            //拖动进度
+            try {
+                iService.seekTo(progress);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
+
     }
 
     class MyReceiver extends BroadcastReceiver{
@@ -210,13 +239,12 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
                         int curProgress = iService.getCurrentProgress();
                         //设置在播放页面的进程SeekBar上
                         sb_playing.setProgress(curProgress);
-                        Log.e("curProgress"," "+utils.stringForTime(curProgress));
-                        Log.e("max"," "+utils.stringForTime(iService.getDuration()));
+//                        Log.e("curProgress"," "+utils.stringForTime(curProgress));
+//                        Log.e("max"," "+utils.stringForTime(iService.getDuration()));
                         //时间更新
-//                        tv_time_playing.setText(utils.stringForTime(curProgress));
-//                        tv_time_duration.setText(utils.stringForTime(iService.getDuration()));
-                        tv_time_playing.setText("....");
-                        tv_time_duration.setText("max");
+                        tv_time_playing.setText(utils.stringForTime(curProgress));
+                        tv_time_duration.setText(utils.stringForTime(iService.getDuration()));
+
                         //每秒更新一次
                         handler.removeMessages(PROGRESS);
                         handler.sendEmptyMessageDelayed(PROGRESS,1000);

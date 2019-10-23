@@ -65,5 +65,15 @@ interface IMusicPlayerService {
     void setPlayMode(int playMode);
     int getPlayMode();
 
+    /**
+     * 查看播放器是否在播放
+     * @return
+     */
     boolean isPlaying();
+
+    /**
+     * 拖动音频到指定位置
+     * @param position
+     */
+    void seekTo(int position);
 }

@@ -111,6 +111,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         public boolean isPlaying() throws RemoteException {
             return musicPlayerService.isPlaying();
         }
+
+        @Override
+        public void seekTo(int position) throws RemoteException {
+            musicPlayerService.seekTo(position);
+        }
     };
     @Override
     public void onCreate() {
@@ -289,10 +294,21 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         return 0;
     }
 
+    /**
+     * 查看播放器是否在播放
+     * @return
+     */
     private boolean isPlaying(){
         return mediaPlayer.isPlaying();
     }
 
+    /**
+     * 拖动音频到指定位置
+     * @param position
+     */
+    private void seekTo(int position){
+        mediaPlayer.seekTo(position);
+    }
 
     //播放器监听处理
     @Override
