@@ -209,42 +209,58 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
                 }
             }
         }else if(v == btn_last_playing){
-
+            if(iService != null){
+                try {
+                    iService.last();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
         }else if(v == btn_next_playing){
-
+            if(iService != null){
+                try {
+                    iService.next();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
         }else if(v == iv_loop_playing){
-            try {
-                int playMode = iService.getPlayMode();
+            if(iService != null){
+                try {
+                    int playMode = iService.getPlayMode();
 
-                if(playMode == MusicPlayerService.LOOP){
-                    iService.setPlayMode(MusicPlayerService.LOOP_ONE);
-                }else if(playMode == MusicPlayerService.RANDOM){
-                    iService.setPlayMode(MusicPlayerService.LOOP_RANDOM);
-                }else if(playMode == MusicPlayerService.LOOP_RANDOM){
-                    iService.setPlayMode(MusicPlayerService.RANDOM);
-                }else if(playMode == MusicPlayerService.LOOP_ONE){
-                    iService.setPlayMode(MusicPlayerService.LOOP);
+                    if(playMode == MusicPlayerService.LOOP){
+                        iService.setPlayMode(MusicPlayerService.LOOP_ONE);
+                    }else if(playMode == MusicPlayerService.RANDOM){
+                        iService.setPlayMode(MusicPlayerService.LOOP_RANDOM);
+
+                    }else if(playMode == MusicPlayerService.LOOP_RANDOM){
+                        iService.setPlayMode(MusicPlayerService.RANDOM);
+                    }else if(playMode == MusicPlayerService.LOOP_ONE){
+                        iService.setPlayMode(MusicPlayerService.LOOP);
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
-            } catch (RemoteException e) {
-                e.printStackTrace();
+                showPlayMode();
             }
-
-            showPlayMode();
         }else if(v == iv_random_playing){
-            try {
-                int playMode = iService.getPlayMode();
+            if(iService != null){
+                try {
+                    int playMode = iService.getPlayMode();
 
-                if(playMode == MusicPlayerService.LOOP){
-                    iService.setPlayMode(MusicPlayerService.LOOP_RANDOM);
-                }else if(playMode == MusicPlayerService.LOOP_RANDOM){
-                    iService.setPlayMode(MusicPlayerService.LOOP);
+                    if(playMode == MusicPlayerService.LOOP){
+                        iService.setPlayMode(MusicPlayerService.LOOP_RANDOM);
+
+                    }else if(playMode == MusicPlayerService.LOOP_RANDOM){
+                        iService.setPlayMode(MusicPlayerService.LOOP);
+                    }
+
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
-
-            } catch (RemoteException e) {
-                e.printStackTrace();
+                showPlayMode();
             }
-
-            showPlayMode();
         }
     }
 

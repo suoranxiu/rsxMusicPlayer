@@ -24,10 +24,13 @@ import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.activity.AudioPlayerActivity;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
+import com.example.testmusicplayer.utils.CacheUtils;
 
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
@@ -49,6 +52,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
 
     //service中所用到的对象
     private ArrayList<MediaItem> mediaItems;
+    private ArrayList<MediaItem> randomMediaItems;
     private MediaItem mediaItem;
     private MediaPlayer mediaPlayer;
 
@@ -144,6 +148,9 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     public void onCreate() {
         super.onCreate();
         Log.e("Tag","Creating Service");
+
+        playMode = CacheUtils.getPlaymode(this,"playmode");
+
         getDataFromLocal();
     }
 
@@ -217,7 +224,12 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         if(mediaItems != null && mediaItems.size() != 0){
             Log.e("position",""+position);
             Log.e("opening music",mediaItems.size()+"songs");
-            mediaItem = mediaItems.get(position);
+
+            if(playMode == LOOP_RANDOM){
+                mediaItem = randomMediaItems.get(position);
+            }else {
+                mediaItem = mediaItems.get(position);
+            }
             if(mediaPlayer != null){
 
                 mediaPlayer.reset();
@@ -314,12 +326,43 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      * 播放上一首
      */
     private void last(){
+        
     }
 
     /**
      * 播放下一首
      */
     private void next(){
+        setNextPosition();
+        openNextAudio();
+    }
+
+    private void openNextAudio() {
+
+    }
+
+    private void setNextPosition() {
+        int playMode = getPlayMode();
+        if(playMode == MusicPlayerService.LOOP){
+            position++;
+            if(position >= mediaItems.size()){
+                position = 0;
+            }
+        }else if(playMode == MusicPlayerService.LOOP_ONE){
+            position++;
+            if(position >= mediaItems.size()){
+                position = 0;
+            }
+        }else if(playMode == MusicPlayerService.RANDOM){
+
+            position = (int)Math.random()*(mediaItems.size()-1);
+
+        }else if(playMode == MusicPlayerService.LOOP_RANDOM){
+            position++;
+            if(position >= mediaItems.size()){
+                position = 0;
+            }
+        }
 
     }
 
@@ -329,6 +372,17 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     private void setPlayMode(int playMode){
         this.playMode = playMode;
+        if(playMode == LOOP_RANDOM){
+            disorderItems();
+        }
+        CacheUtils.putPlaymode(this,"playmode",playMode);
+    }
+
+    private void disorderItems() {
+
+        randomMediaItems = mediaItems;
+
+        Collections.shuffle(randomMediaItems);
     }
 
     /**
@@ -336,6 +390,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      * @return
      */
     private  int getPlayMode(){
+
         return playMode;
     }
 
