@@ -1,12 +1,12 @@
 package com.example.testmusicplayer.service;
 
-import android.app.Activity;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
-import android.content.Context;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -24,7 +24,7 @@ import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.activity.AudioPlayerActivity;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
-import com.example.testmusicplayer.utils.Grant;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,11 +32,23 @@ import java.util.ArrayList;
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
+    //broadcast 的action
     public static final String OPENAUDIO = "com.example.musicplayer_OPENAUDIO";
     public static final String PLAYED = "com.example.musicplayer_PLAYED";
 
-    private ArrayList<MediaItem> mediaItems;
+    //播放模式
+    public static final int LOOP = 1;
+    public static final int RANDOM = 2;
+    public static final int LOOP_RANDOM = 3;
+    public static final int LOOP_ONE = 4;
+
+    private int playMode = LOOP;
+
+    //当前列表中的哪一首
     private  int position;
+
+    //service中所用到的对象
+    private ArrayList<MediaItem> mediaItems;
     private MediaItem mediaItem;
     private MediaPlayer mediaPlayer;
 
@@ -126,6 +138,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
             musicPlayerService.seekTo(position);
         }
     };
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -314,10 +328,15 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      * @param playMode
      */
     private void setPlayMode(int playMode){
-
+        this.playMode = playMode;
     }
+
+    /**
+     * 返回播放模式
+     * @return
+     */
     private  int getPlayMode(){
-        return 0;
+        return playMode;
     }
 
     /**

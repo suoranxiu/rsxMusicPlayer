@@ -7,8 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.database.ContentObserver;
 import android.media.AudioManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -26,16 +26,15 @@ import androidx.annotation.Nullable;
 
 import com.example.testmusicplayer.IMusicPlayerService;
 import com.example.testmusicplayer.R;
-import com.example.testmusicplayer.domain.MediaItem;
+
 import com.example.testmusicplayer.service.MusicPlayerService;
 import com.example.testmusicplayer.utils.Utils;
 
-import java.util.ArrayList;
+
 
 public class AudioPlayerActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
 
-    private View view_return_line;
     private ImageView iv_album_playing;
     private TextView tv_name_playing;
     private TextView tv_artist_playing;
@@ -177,12 +176,17 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
         sb_playing = (SeekBar)findViewById(R.id.sb_playing);
         sb_volume = (SeekBar)findViewById(R.id.sb_volume);
 
+        iv_loop_playing = (ImageView)findViewById(R.id.iv_loop_playing);
+        iv_random_playing = (ImageView)findViewById(R.id.iv_random_playing);
+
 
         btn_start_playing.setOnClickListener(this);
         btn_last_playing.setOnClickListener(this);
         btn_next_playing.setOnClickListener(this);
         sb_playing.setOnSeekBarChangeListener(this);
         sb_volume.setOnSeekBarChangeListener(this);
+        iv_loop_playing.setOnClickListener(this);
+        iv_random_playing.setOnClickListener(this);
 
 
     }
@@ -208,6 +212,39 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
 
         }else if(v == btn_next_playing){
 
+        }else if(v == iv_loop_playing){
+            try {
+                int playMode = iService.getPlayMode();
+
+                if(playMode == MusicPlayerService.LOOP){
+                    iService.setPlayMode(MusicPlayerService.LOOP_ONE);
+                }else if(playMode == MusicPlayerService.RANDOM){
+                    iService.setPlayMode(MusicPlayerService.LOOP_RANDOM);
+                }else if(playMode == MusicPlayerService.LOOP_RANDOM){
+                    iService.setPlayMode(MusicPlayerService.RANDOM);
+                }else if(playMode == MusicPlayerService.LOOP_ONE){
+                    iService.setPlayMode(MusicPlayerService.LOOP);
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+            showPlayMode();
+        }else if(v == iv_random_playing){
+            try {
+                int playMode = iService.getPlayMode();
+
+                if(playMode == MusicPlayerService.LOOP){
+                    iService.setPlayMode(MusicPlayerService.LOOP_RANDOM);
+                }else if(playMode == MusicPlayerService.LOOP_RANDOM){
+                    iService.setPlayMode(MusicPlayerService.LOOP);
+                }
+
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+            showPlayMode();
         }
     }
 
@@ -271,9 +308,30 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
             sb_playing.setMax(iService.getDuration());
 
             initVolume();
+            showPlayMode();
 
             handler.sendEmptyMessage(PROGRESS);
 
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    private void showPlayMode(){
+        try {
+            int playMode = iService.getPlayMode();
+            if(playMode == MusicPlayerService.LOOP){
+                iv_random_playing.setImageResource(R.drawable.random_icon);
+                iv_loop_playing.setImageResource(R.drawable.loop_icon_press);
+            }else if(playMode == MusicPlayerService.LOOP_ONE){
+                iv_random_playing.setImageResource(R.drawable.random_icon);
+                iv_loop_playing.setImageResource(R.drawable.loop_one_icon_press);
+            }else if(playMode == MusicPlayerService.RANDOM){
+                iv_random_playing.setImageResource(R.drawable.random_press);
+                iv_loop_playing.setImageResource(R.drawable.loop_icon);
+            }else if(playMode == MusicPlayerService.LOOP_RANDOM){
+                iv_random_playing.setImageResource(R.drawable.random_press);
+                iv_loop_playing.setImageResource(R.drawable.loop_icon_press);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }

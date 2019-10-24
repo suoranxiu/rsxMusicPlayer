@@ -21,7 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.AudioPlayerActivity" android:launchMode="singleTask"></activity>
+        <activity android:name=".activity.AudioPlayerActivity" android:launchMode="singleTask"/>//单例模式防止创建多次
         <service android:name=".service.MusicPlayerService">
             <intent-filter>
                 <action android:name="com.example.musicplayer_OPENAUDIO"/>
