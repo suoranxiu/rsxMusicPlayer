@@ -8,7 +8,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +26,7 @@ import com.example.testmusicplayer.pager.AlbumPager;
 import com.example.testmusicplayer.pager.ArtistPager;
 import com.example.testmusicplayer.pager.ListPager;
 import com.example.testmusicplayer.pager.SettingPager;
+import com.example.testmusicplayer.service.MusicPlayerService;
 import com.example.testmusicplayer.utils.ReplaceFragment;
 
 import java.util.ArrayList;
@@ -32,7 +36,7 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
     private FrameLayout fl_main_content;
     private RadioGroup rg_bottom_tag;
     private ImageView iv_music_player;
-    private boolean isPlaying = true;
+    private boolean isPlaying = false;
 
     /**
      * 页面的集合
@@ -61,6 +65,8 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
         rg_bottom_tag.check(R.id.rb_list);//默认选中播放列表
 
         iv_music_player.setOnClickListener(this);
+
+        initReceiver();
     }
 
     @Override
@@ -116,5 +122,24 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
             intent.putExtra("Notification",true);
             startActivity(intent);
         }
+    }
+
+    private void initReceiver(){
+        MyReceiver receiver = new MyReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MusicPlayerService.PLAYED);
+        registerReceiver(receiver,intentFilter);
+    }
+    class MyReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            changeLogo();
+            isPlaying = true;
+        }
+    }
+
+    private void changeLogo(){
+        iv_music_player.setImageResource(R.drawable.music_player_icon2_press);
     }
 }

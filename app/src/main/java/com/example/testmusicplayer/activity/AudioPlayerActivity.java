@@ -260,6 +260,11 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
     private void showViewData() {
 
         try {
+            if(iService.isPlaying()){
+                btn_start_playing.setBackgroundResource(R.drawable.btn_pause_playing_selector);
+            }else {
+              btn_start_playing.setBackgroundResource(R.drawable.btn_start_playing_selector);
+            }
             tv_name_playing.setText(iService.getMusicName());
             tv_artist_playing.setText(iService.getArtist());
             iv_album_playing.setImageBitmap(iService.getAlbumArt());

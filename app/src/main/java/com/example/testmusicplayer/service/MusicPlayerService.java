@@ -33,6 +33,8 @@ import java.util.ArrayList;
 public class MusicPlayerService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
     public static final String OPENAUDIO = "com.example.musicplayer_OPENAUDIO";
+    public static final String PLAYED = "com.example.musicplayer_PLAYED";
+
     private ArrayList<MediaItem> mediaItems;
     private  int position;
     private MediaItem mediaItem;
@@ -229,6 +231,9 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
 
         mediaPlayer.start();
 
+        //通知主页activity改变logo颜色
+        notifyChange(MusicPlayerService.PLAYED);
+
         //当正在播放歌曲的时候，在状态栏显示当前正在播放的信息，点击此，可以进入播放界面activity
         notifyManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Intent intent = new Intent(this,AudioPlayerActivity.class);
@@ -247,10 +252,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     private void pause(){
         mediaPlayer.pause();
-        notifyManager.cancel(1);
+
     }
     private void stop(){
         mediaPlayer.stop();
+        notifyManager.cancel(1);
     }
     /**
      * 得到当前音频的播放进度
