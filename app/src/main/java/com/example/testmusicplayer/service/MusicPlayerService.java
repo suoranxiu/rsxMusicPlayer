@@ -168,6 +168,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
 
+
     private void getDataFromLocal() {
 
         mediaItems = new ArrayList<>();
@@ -328,7 +329,36 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      * 播放上一首
      */
     private void last(){
-        
+        setLastPosition();
+        openLastAudio();
+    }
+
+    private void openLastAudio() {
+    }
+
+    private void setLastPosition() {
+        int playMode = getPlayMode();
+        if(playMode == MusicPlayerService.LOOP){
+            position --;
+            if(position < 0){
+                position = mediaItems.size() - 1;
+            }
+        }else if(playMode == MusicPlayerService.LOOP_ONE){
+            position --;
+            if(position < 0){
+                position = mediaItems.size()-1;
+            }
+        }else if(playMode == MusicPlayerService.RANDOM){
+
+            position = (int)(Math.random()*(mediaItems.size()-1));
+
+        }else if(playMode == MusicPlayerService.LOOP_RANDOM){
+            randomIndex -- ;
+            if(randomIndex < 0){
+                randomIndex = randomIndexList.length - 1;
+            }
+            position = randomIndexList[randomIndex];
+        }
     }
 
     /**
