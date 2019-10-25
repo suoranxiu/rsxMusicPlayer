@@ -29,8 +29,8 @@ import com.example.testmusicplayer.utils.CacheUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
@@ -50,9 +50,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     //当前列表中的哪一首
     private  int position;
 
+    private int randomIndex;
+
     //service中所用到的对象
     private ArrayList<MediaItem> mediaItems;
-    private ArrayList<MediaItem> randomMediaItems;
+    private int[] randomIndexList;
     private MediaItem mediaItem;
     private MediaPlayer mediaPlayer;
 
@@ -144,6 +146,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     };
 
 
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -152,6 +155,9 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         playMode = CacheUtils.getPlaymode(this,"playmode");
 
         getDataFromLocal();
+        if(playMode == LOOP_RANDOM){
+            disorderItems();
+        }
     }
 
 
@@ -206,7 +212,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
                 AlbumArt albumArt = new AlbumArt(MusicPlayerService.this,albumId);
                 mediaItem.setAlbumArt(albumArt.getAlbumBmp());
             }
-            Log.e("num of songs"," "+mediaItems.size());
+            Log.e("num of songs"," "+(mediaItems.size()-1));
             cursor.close();
         }
 
@@ -222,14 +228,10 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     private void openAudio(int position){
         this.position = position;
         if(mediaItems != null && mediaItems.size() != 0){
-            Log.e("position",""+position);
-            Log.e("opening music",mediaItems.size()+"songs");
+            Log.e("cur position",""+position);
 
-            if(playMode == LOOP_RANDOM){
-                mediaItem = randomMediaItems.get(position);
-            }else {
-                mediaItem = mediaItems.get(position);
-            }
+            mediaItem = mediaItems.get(position);
+
             if(mediaPlayer != null){
 
                 mediaPlayer.reset();
@@ -355,14 +357,17 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
             }
         }else if(playMode == MusicPlayerService.RANDOM){
 
-            position = (int)Math.random()*(mediaItems.size()-1);
+            position = (int)(Math.random()*(mediaItems.size()-1));
 
         }else if(playMode == MusicPlayerService.LOOP_RANDOM){
-            position++;
-            if(position >= mediaItems.size()){
-                position = 0;
+            randomIndex++;
+            if(randomIndex >= randomIndexList.length){
+                randomIndex = 0;
             }
+            position = randomIndexList[randomIndex];
         }
+//        Log.e("playMode:",playMode+"");
+//        Log.e("next position:",position+"");
 
     }
 
@@ -378,12 +383,26 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         CacheUtils.putPlaymode(this,"playmode",playMode);
     }
 
+    /**
+     * 随机生成与音乐列表长度相同的乱序索引List
+     */
     private void disorderItems() {
-
-        randomMediaItems = mediaItems;
-
-        Collections.shuffle(randomMediaItems);
+        int size = mediaItems.size();
+        randomIndexList = new int[size];
+        Random random = new Random();
+        List<Integer> lst = new ArrayList<Integer>();
+        for (int i = 0; i < size; i++) {
+            lst.add(i);
+        }
+        int index = 0;
+        for (int i = 0; i < size; i++) {
+            index = random.nextInt(size - i);
+            randomIndexList[i] = lst.get(index);
+            lst.remove(index);
+        }
+        randomIndex = position;
     }
+
 
     /**
      * 返回播放模式
