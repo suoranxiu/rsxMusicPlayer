@@ -49,7 +49,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
 
     //当前列表中的哪一首
     private  int position;
-
     private int randomIndex;
 
     //service中所用到的对象
@@ -245,6 +244,14 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
                 mediaPlayer.setDataSource(mediaItem.getData());
                 mediaPlayer.prepareAsync();
 
+                if(playMode == LOOP_ONE){
+                    //单曲循环--就不会触发播放完成的回调
+                    mediaPlayer.setLooping(true);
+                    Log.e("TAG","set looping");
+                }else {
+                    mediaPlayer.setLooping(false);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -334,6 +341,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     private void openLastAudio() {
+        openAudio(position);
     }
 
     private void setLastPosition() {
@@ -370,7 +378,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     private void openNextAudio() {
-
+        openAudio(position);
     }
 
     private void setNextPosition() {
@@ -409,6 +417,13 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         this.playMode = playMode;
         if(playMode == LOOP_RANDOM){
             disorderItems();
+        }
+        if(playMode == LOOP_ONE){
+            //单曲循环--就不会触发播放完成的回调
+            mediaPlayer.setLooping(true);
+            Log.e("TAG","set looping");
+        }else {
+            mediaPlayer.setLooping(false);
         }
         CacheUtils.putPlaymode(this,"playmode",playMode);
     }
