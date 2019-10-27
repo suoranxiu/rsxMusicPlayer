@@ -26,7 +26,8 @@
             android:drawableTop="@drawable/rb_list_drawable_selector"
             style="@style/bottom_tag_style"
             android:layout_weight="1"
-            android:text="MusicList"/>
+            android:text="MusicList">
+        </RadioButton>
         <RadioButton
             android:id="@+id/rb_album"
             android:drawableTop="@drawable/rb_album_drawable_selector"

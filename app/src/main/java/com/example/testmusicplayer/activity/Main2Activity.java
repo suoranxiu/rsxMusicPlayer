@@ -12,12 +12,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import android.view.View;
 
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.example.testmusicplayer.R;
@@ -35,6 +37,10 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
 
     private FrameLayout fl_main_content;
     private RadioGroup rg_bottom_tag;
+    private RadioButton rb_list;
+    private RadioButton rb_album;
+    private RadioButton rb_artist;
+    private RadioButton rb_setting;
     private ImageView iv_music_player;
     private boolean isPlaying = false;
 
@@ -53,7 +59,12 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
         fl_main_content = (FrameLayout)findViewById(R.id.fl_main_content);
         rg_bottom_tag = (RadioGroup)findViewById(R.id.rg_bottom_tag);
         iv_music_player = (ImageView)findViewById(R.id.iv_music_player);
+        rb_list = (RadioButton)findViewById(R.id.rb_list);
+        rb_album = (RadioButton)findViewById(R.id.rb_album);
+        rb_artist = (RadioButton)findViewById(R.id.rb_artist);
+        rb_setting = (RadioButton)findViewById(R.id.rb_setting);
 
+        setImageSize(80);
 
         basePagers = new ArrayList<>();
         basePagers.add(new ListPager(this));
@@ -67,6 +78,25 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
         iv_music_player.setOnClickListener(this);
 
         initReceiver();
+    }
+
+    private void setImageSize(int size) {
+        Drawable listDrawable = getResources().getDrawable(R.drawable.rb_list_drawable_selector);
+        listDrawable.setBounds(0, 0, size, size);
+        rb_list.setCompoundDrawables(null, listDrawable, null, null);
+
+        Drawable albumDrawable = getResources().getDrawable(R.drawable.rb_album_drawable_selector);
+        albumDrawable.setBounds(0, 0, size, size);
+        rb_album.setCompoundDrawables(null, albumDrawable, null, null);
+
+        Drawable artistDrawable = getResources().getDrawable(R.drawable.rb_artist_drawable_selector);
+        artistDrawable.setBounds(0, 0, size, size);
+        rb_artist.setCompoundDrawables(null, artistDrawable, null, null);
+
+        Drawable settingDrawable = getResources().getDrawable(R.drawable.rb_setting_drawable_selector);
+        settingDrawable.setBounds(0, 0, size, size);
+        rb_setting.setCompoundDrawables(null, settingDrawable, null, null);
+
     }
 
     @Override
