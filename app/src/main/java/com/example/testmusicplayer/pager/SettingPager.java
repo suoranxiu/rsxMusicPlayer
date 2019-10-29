@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.example.testmusicplayer.base.BasePager;
 
 /**
- * 本地音乐的列表的页面
+ * 设置页面
  */
 public class SettingPager extends BasePager {
 

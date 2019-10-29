@@ -212,7 +212,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
                 AlbumArt albumArt = new AlbumArt(MusicPlayerService.this,albumId);
                 mediaItem.setAlbumArt(albumArt.getAlbumBmp());
             }
-            Log.e("num of songs"," "+(mediaItems.size()-1));
+            Log.e("num of songs"," "+(mediaItems.size()));
             cursor.close();
         }
 
