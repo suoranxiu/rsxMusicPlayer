@@ -51,4 +51,8 @@ public class Album {
     public void setAlbumArt(Bitmap albumArt) {
         this.albumArt = albumArt;
     }
+
+    public Map<Integer, MediaItem> getAlbumMap(){
+        return AlbumMap;
+    }
 }

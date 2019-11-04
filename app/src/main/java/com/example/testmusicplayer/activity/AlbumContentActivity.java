@@ -15,6 +15,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.example.testmusicplayer.R;
+import com.example.testmusicplayer.adapter.AlbumContentAdapter;
+import com.example.testmusicplayer.adapter.AlbumPagerAdapter;
 import com.example.testmusicplayer.domain.Album;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
@@ -134,6 +136,8 @@ public class AlbumContentActivity extends Activity {
         tv_albumName_albumContent.setText(album.getAlbumName());
         tv_artist_albumContent.setText(album.getArtist());
 
+        AlbumContentAdapter albumContentAdapter = new AlbumContentAdapter(this,album.getAlbumMap());
+        lv_song_albumContent.setAdapter(albumContentAdapter);
 
     }
 
