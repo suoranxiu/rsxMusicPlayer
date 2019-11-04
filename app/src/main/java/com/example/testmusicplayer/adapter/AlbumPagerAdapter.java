@@ -1,16 +1,17 @@
 package com.example.testmusicplayer.adapter;
 
 import android.content.Context;
-import android.database.DataSetObserver;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.testmusicplayer.R;
+import com.example.testmusicplayer.activity.AlbumContentActivity;
+import com.example.testmusicplayer.activity.AudioPlayerActivity;
 import com.example.testmusicplayer.domain.Album;
 
 import java.util.ArrayList;
@@ -96,6 +97,42 @@ public class AlbumPagerAdapter extends BaseAdapter {
             viewHolder.tv_artistName2.setText(album2.getArtist());
         }
 
+        viewHolder.iv_albumaArt1.setOnClickListener(new OnEvenListener(position));
+        viewHolder.iv_albumaArt2.setOnClickListener(new OnOddListener(position));
+
         return convertView;
     }
+    private class OnEvenListener implements View.OnClickListener{
+        int pos = 0;
+
+        public OnEvenListener(int position) {
+            this.pos = position * 2;
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(context, AlbumContentActivity.class);
+            intent.putExtra("position",pos);
+            context.startActivity(intent);
+        }
+    }
+    private class OnOddListener implements View.OnClickListener{
+        int pos = 0;
+
+        public OnOddListener(int position) {
+            this.pos = position * 2 + 1;
+
+        }
+
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(context, AlbumContentActivity.class);
+            intent.putExtra("position",pos);
+            context.startActivity(intent);
+        }
+    }
+
+
 }

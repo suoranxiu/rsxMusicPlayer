@@ -27,6 +27,7 @@
                 <action android:name="com.example.musicplayer_OPENAUDIO"/>
             </intent-filter>
         </service>
+        <activity android:name=".activity.AlbumContentActivity"/>
     </application>
 
 </manifest>
