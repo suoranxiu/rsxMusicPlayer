@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,10 +22,11 @@ import com.example.testmusicplayer.adapter.AlbumPagerAdapter;
 import com.example.testmusicplayer.domain.Album;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
+import com.example.testmusicplayer.utils.Utils;
 
 import java.util.ArrayList;
 
-public class AlbumContentActivity extends Activity {
+public class AlbumContentActivity extends Activity implements View.OnClickListener {
 
     private ImageView iv_album_content;
     private TextView tv_albumName_albumContent;
@@ -36,6 +39,9 @@ public class AlbumContentActivity extends Activity {
 
     private ArrayList<Album> albumList;
 
+    private int totalTime;
+    private int totalNums;
+    private Utils utils = new Utils();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +62,16 @@ public class AlbumContentActivity extends Activity {
 
         ly_return_albumContent = (LinearLayout)findViewById(R.id.ly_return_albumContent);
         lv_song_albumContent = (ListView)findViewById(R.id.lv_song_albumContent);
+
+        ly_return_albumContent.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v == ly_return_albumContent){
+            finish();
+//            Log.e("click","onDestroy");
+        }
     }
 
     public void getPos(){
@@ -135,7 +151,9 @@ public class AlbumContentActivity extends Activity {
         iv_album_content.setImageBitmap(album.getAlbumArt());
         tv_albumName_albumContent.setText(album.getAlbumName());
         tv_artist_albumContent.setText(album.getArtist());
-
+        getTotalNums();
+        getTotalTime(album);
+        tv_album_info.setText(totalNums+" songs, "+totalTime+" minutes");
         AlbumContentAdapter albumContentAdapter = new AlbumContentAdapter(this,album.getAlbumMap());
         lv_song_albumContent.setAdapter(albumContentAdapter);
 
@@ -158,4 +176,22 @@ public class AlbumContentActivity extends Activity {
         }
         return existed;
     }
+
+    public void getTotalTime(Album album){
+        long temp = 0;
+        MediaItem mediaItem;
+        for(int i =0;i<album.getAlbumMap().size();i++){
+           mediaItem =  album.getAlbumMap().get(i);
+           long duration = mediaItem.getDuration();
+           temp += duration;
+        }
+        int t = (int)(temp);
+        String time = utils.stringForTime(t);
+//        Log.e("duration",time);
+        totalTime = Integer.parseInt(time.split(":")[0]);
+    }
+    public void getTotalNums(){
+        totalNums = albumList.size();
+    }
+
 }

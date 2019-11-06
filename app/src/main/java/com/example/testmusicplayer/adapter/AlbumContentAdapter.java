@@ -52,8 +52,8 @@ public class AlbumContentAdapter extends BaseAdapter {
         int id = position + 1;
         String songName = AlbumMap.get(position).getName();
         songName = songName.substring(songName.lastIndexOf("-")+2,songName.lastIndexOf("."));;
-        Log.e("id",""+id);
-        Log.e("songName",""+songName);
+//        Log.e("id",""+id);
+//        Log.e("songName",""+songName);
         viewHolder.tv_songName_abContent.setText(songName);
         viewHolder.tv_id_song_abContent.setText("#"+id);
 

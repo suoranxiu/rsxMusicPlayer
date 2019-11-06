@@ -36,7 +36,7 @@
                 <TextView
                     android:id="@+id/tv_albumName_albumContent"
                     android:layout_width="wrap_content"
-                    android:layout_height="22sp"
+                    android:layout_height="26sp"
                     android:textColor="#000000"
                     android:textSize="20sp"
                     android:text="AlbumName"/>
@@ -44,7 +44,7 @@
                     android:id="@+id/tv_artist_albumContent"
                     android:layout_marginTop="4sp"
                     android:layout_width="wrap_content"
-                    android:layout_height="18sp"
+                    android:layout_height="22sp"
                     android:textColor="#d3217b"
                     android:textSize="16sp"
                     android:text="Artist"/>
@@ -52,7 +52,7 @@
                     android:id="@+id/tv_album_info"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:layout_marginTop="55dp"
+                    android:layout_marginTop="50dp"
                     android:textSize="16sp"
                     android:text="# songs，# minutes"/>
             </LinearLayout>
