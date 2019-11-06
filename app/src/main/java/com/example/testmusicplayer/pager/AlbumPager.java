@@ -95,7 +95,7 @@ public class AlbumPager extends BasePager {
 
                     int albumId = cursor.getInt(6);
                     AlbumArt albumArt = new AlbumArt(context, albumId);
-                    mediaItem.setAlbumArt(albumArt.getAlbumBmp());
+                    mediaItem.setAlbumArt(albumArt);
 
                     //查看是否专辑和歌手已经存在
                     int albumIndex = checkAlbum(album,artist);

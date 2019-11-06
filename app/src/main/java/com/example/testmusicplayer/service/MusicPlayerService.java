@@ -210,7 +210,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
 
                 int albumId = cursor.getInt(6);
                 AlbumArt albumArt = new AlbumArt(MusicPlayerService.this,albumId);
-                mediaItem.setAlbumArt(albumArt.getAlbumBmp());
+                mediaItem.setAlbumArt(albumArt);
             }
             Log.e("num of songs"," "+(mediaItems.size()));
             cursor.close();
@@ -329,7 +329,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      * @return
      */
     private Bitmap getAlbumArt(){
-        return mediaItem.getAlbumArt();
+        return mediaItem.getAlbumArt().bmp;
     }
 
     /**

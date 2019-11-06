@@ -156,7 +156,7 @@ public class ListPager extends BasePager implements AdapterView.OnItemClickListe
 
                             int albumId = cursor.getInt(6);
                             AlbumArt albumArt = new AlbumArt(context,albumId);
-                            mediaItem.setAlbumArt(albumArt.getAlbumBmp());
+                            mediaItem.setAlbumArt(albumArt);
                         }
                         cursor.close();
                     }

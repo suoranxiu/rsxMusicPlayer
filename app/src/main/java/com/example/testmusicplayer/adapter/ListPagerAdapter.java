@@ -56,7 +56,7 @@ public class ListPagerAdapter extends BaseAdapter {
         String songName = fileName.substring(fileName.lastIndexOf("-")+2,fileName.lastIndexOf("."));
         viewHolder.tv_name_listPager.setText(songName);
         viewHolder.tv_artist_listPager.setText(mediaItem.getArtist());
-        viewHolder.iv_album_icon_listPager.setImageBitmap(mediaItem.getAlbumArt());
+        viewHolder.iv_album_icon_listPager.setImageBitmap(mediaItem.getAlbumArt().bmp);
         return convertView;
     }
 

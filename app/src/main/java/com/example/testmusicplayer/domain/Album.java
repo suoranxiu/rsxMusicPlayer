@@ -2,6 +2,8 @@ package com.example.testmusicplayer.domain;
 
 import android.graphics.Bitmap;
 
+import com.example.testmusicplayer.utils.AlbumArt;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +13,7 @@ public class Album {
     private String albumName;
     private String artist;
     int position;
-    private Bitmap albumArt;
+    private AlbumArt albumArt;
 
     public Album(String albumName, String artist) {
         this.albumName = albumName;
@@ -44,11 +46,11 @@ public class Album {
         this.artist = artist;
     }
 
-    public Bitmap getAlbumArt() {
+    public AlbumArt getAlbumArt() {
         return albumArt;
     }
 
-    public void setAlbumArt(Bitmap albumArt) {
+    public void setAlbumArt(AlbumArt albumArt) {
         this.albumArt = albumArt;
     }
 

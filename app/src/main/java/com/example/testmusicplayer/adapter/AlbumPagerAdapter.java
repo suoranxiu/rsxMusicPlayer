@@ -83,7 +83,7 @@ public class AlbumPagerAdapter extends BaseAdapter {
         }
 
         Album album1 = albumList.get(position*2);
-        viewHolder.iv_albumaArt1.setImageBitmap(album1.getAlbumArt());
+        viewHolder.iv_albumaArt1.setImageBitmap(album1.getAlbumArt().bmp);
         viewHolder.tv_albumName1.setText(album1.getAlbumName());
         viewHolder.tv_artistName1.setText(album1.getArtist());
 
@@ -92,7 +92,7 @@ public class AlbumPagerAdapter extends BaseAdapter {
         } else {
             viewHolder.albumItem2.setVisibility(View.VISIBLE); // 必须进行设置，负责存在复用holder的时候，会出现右侧的出现留白，跟最后一个一样，这个也是我写这篇文章最想锁的
             Album album2 = albumList.get(position*2+1);
-            viewHolder.iv_albumaArt2.setImageBitmap(album2.getAlbumArt());
+            viewHolder.iv_albumaArt2.setImageBitmap(album2.getAlbumArt().bmp);
             viewHolder.tv_albumName2.setText(album2.getAlbumName());
             viewHolder.tv_artistName2.setText(album2.getArtist());
         }

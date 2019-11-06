@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.adapter.AlbumContentAdapter;
-import com.example.testmusicplayer.adapter.AlbumPagerAdapter;
 import com.example.testmusicplayer.domain.Album;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
@@ -28,12 +27,14 @@ import java.util.ArrayList;
 
 public class AlbumContentActivity extends Activity implements View.OnClickListener {
 
+    private LinearLayout ly_albumContent;
     private ImageView iv_album_content;
     private TextView tv_albumName_albumContent;
     private TextView tv_artist_albumContent;
     private TextView tv_album_info;
     private LinearLayout ly_return_albumContent;
     private ListView lv_song_albumContent;
+
 
     private int position;
 
@@ -55,6 +56,8 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
     }
 
     public void initView(){
+
+        ly_albumContent = (LinearLayout)findViewById(R.id.ly_albumContent);
         iv_album_content = (ImageView)findViewById(R.id.iv_album_content);
         tv_albumName_albumContent = (TextView)findViewById(R.id.tv_albumName_albumContent);
         tv_artist_albumContent = (TextView)findViewById(R.id.tv_artist_albumContent);
@@ -123,7 +126,7 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
 
                 int albumId = cursor.getInt(6);
                 AlbumArt albumArt = new AlbumArt(this, albumId);
-                mediaItem.setAlbumArt(albumArt.getAlbumBmp());
+                mediaItem.setAlbumArt(albumArt);
 
                 //查看是否专辑和歌手已经存在
                 int albumIndex = checkAlbum(album,artist);
@@ -148,12 +151,13 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
 
         Album album = albumList.get(position);
 
-        iv_album_content.setImageBitmap(album.getAlbumArt());
+        iv_album_content.setImageBitmap(album.getAlbumArt().bmp);
+        ly_albumContent.setBackground(new BitmapDrawable(album.getAlbumArt().blurBitmap(20,4)));
         tv_albumName_albumContent.setText(album.getAlbumName());
         tv_artist_albumContent.setText(album.getArtist());
-        getTotalNums();
+        getTotalNums(album);
         getTotalTime(album);
-        tv_album_info.setText(totalNums+" songs, "+totalTime+" minutes");
+        tv_album_info.setText(totalNums+" songs,  "+totalTime+" minutes");
         AlbumContentAdapter albumContentAdapter = new AlbumContentAdapter(this,album.getAlbumMap());
         lv_song_albumContent.setAdapter(albumContentAdapter);
 
@@ -190,8 +194,8 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
 //        Log.e("duration",time);
         totalTime = Integer.parseInt(time.split(":")[0]);
     }
-    public void getTotalNums(){
-        totalNums = albumList.size();
+    public void getTotalNums(Album album){
+        totalNums = album.getAlbumMap().size();
     }
 
 }
