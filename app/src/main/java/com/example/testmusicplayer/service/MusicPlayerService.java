@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import com.example.testmusicplayer.IMusicPlayerService;
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.activity.AudioPlayerActivity;
+import com.example.testmusicplayer.domain.Album;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
 import com.example.testmusicplayer.utils.CacheUtils;
@@ -47,12 +48,18 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
 
     private int playMode = LOOP;
 
+    //是否从ListPager中传来的请求
+    private boolean isLocalList = true;
+
     //当前列表中的哪一首
     private  int position;
+    private int albumPosition;
     private int randomIndex;
 
     //service中所用到的对象
     private ArrayList<MediaItem> mediaItems;
+    private ArrayList<Album> albumList;
+    private ArrayList<MediaItem> playList;
     private int[] randomIndexList;
     private MediaItem mediaItem;
     private MediaPlayer mediaPlayer;
@@ -142,6 +149,18 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         public void seekTo(int position) throws RemoteException {
             musicPlayerService.seekTo(position);
         }
+
+        @Override
+        public void changeToALbumList(int albumPosition) throws RemoteException {
+            musicPlayerService.changeToALbumList(albumPosition);
+        }
+
+        @Override
+        public void changeToLocalList() throws RemoteException {
+            musicPlayerService.changeToLocalList();
+        }
+
+
     };
 
 
@@ -171,6 +190,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     private void getDataFromLocal() {
 
         mediaItems = new ArrayList<>();
+        albumList = new ArrayList<>();
+
         ContentResolver resolver = getContentResolver();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] objs = {
@@ -211,6 +232,19 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
                 int albumId = cursor.getInt(6);
                 AlbumArt albumArt = new AlbumArt(MusicPlayerService.this,albumId);
                 mediaItem.setAlbumArt(albumArt);
+
+                //查看是否专辑和歌手已经存在
+                int albumIndex = checkAlbum(album,artist);
+                if(albumIndex < 0){
+                    //若不存在
+                    Album albumItem = new Album(album,artist);
+                    albumItem.putSong(mediaItem);
+                    albumList.add(albumItem);
+                }else {
+                    //若存在
+                    Album albumItem = albumList.get(albumIndex);
+                    albumItem.putSong(mediaItem);
+                }
             }
             Log.e("num of songs"," "+(mediaItems.size()));
             cursor.close();
@@ -227,10 +261,9 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     private void openAudio(int position){
         this.position = position;
-        if(mediaItems != null && mediaItems.size() != 0){
+        if(playList != null && playList.size() != 0){
             Log.e("cur position",""+position);
-
-            mediaItem = mediaItems.get(position);
+            mediaItem = playList.get(position);
 
             if(mediaPlayer != null){
 
@@ -349,16 +382,16 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         if(playMode == MusicPlayerService.LOOP){
             position --;
             if(position < 0){
-                position = mediaItems.size() - 1;
+                position = playList.size() - 1;
             }
         }else if(playMode == MusicPlayerService.LOOP_ONE){
             position --;
             if(position < 0){
-                position = mediaItems.size()-1;
+                position = playList.size()-1;
             }
         }else if(playMode == MusicPlayerService.RANDOM){
 
-            position = (int)(Math.random()*(mediaItems.size()-1));
+            position = (int)(Math.random()*(playList.size()-1));
 
         }else if(playMode == MusicPlayerService.LOOP_RANDOM){
             randomIndex -- ;
@@ -385,17 +418,17 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         int playMode = getPlayMode();
         if(playMode == MusicPlayerService.LOOP){
             position++;
-            if(position >= mediaItems.size()){
+            if(position >= playList.size()){
                 position = 0;
             }
         }else if(playMode == MusicPlayerService.LOOP_ONE){
             position++;
-            if(position >= mediaItems.size()){
+            if(position >= playList.size()){
                 position = 0;
             }
         }else if(playMode == MusicPlayerService.RANDOM){
 
-            position = (int)(Math.random()*(mediaItems.size()-1));
+            position = (int)(Math.random()*(playList.size()-1));
 
         }else if(playMode == MusicPlayerService.LOOP_RANDOM){
             randomIndex++;
@@ -432,7 +465,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      * 随机生成与音乐列表长度相同的乱序索引List
      */
     private void disorderItems() {
-        int size = mediaItems.size();
+        int size = playList.size();
         randomIndexList = new int[size];
         Random random = new Random();
         List<Integer> lst = new ArrayList<Integer>();
@@ -474,6 +507,27 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         mediaPlayer.seekTo(position);
     }
 
+    /**
+     * 设置播放列表为专辑列表
+     */
+    private void changeToALbumList(int albumPosition){
+        this.albumPosition = albumPosition;
+        int songNums = albumList.get(albumPosition).getAlbumMap().size();
+        ArrayList<MediaItem> list = new ArrayList<>(songNums);
+        for(int i =0;i<songNums;i++){
+            list.add(albumList.get(albumPosition).getAlbumMap().get(i));
+        }
+        playList = list;
+    }
+
+    /**
+     * 设置播放列表为所有本地歌曲的列表
+     */
+    private void changeToLocalList(){
+        playList = mediaItems;
+    }
+
+
     //播放器监听处理
     @Override
     public void onPrepared(MediaPlayer mp) {
@@ -496,5 +550,17 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     public boolean onError(MediaPlayer mp, int what, int extra) {
         next();
         return true;
+    }
+
+    public int checkAlbum(String albumName,String artist){
+        int existed = -1;
+
+        for(int i = 0;i<albumList.size();i++){
+            if(albumName.equals(albumList.get(i).getAlbumName()) && artist.equals(albumList.get(i).getArtist())){
+                existed =  i;
+                break;
+            }
+        }
+        return existed;
     }
 }

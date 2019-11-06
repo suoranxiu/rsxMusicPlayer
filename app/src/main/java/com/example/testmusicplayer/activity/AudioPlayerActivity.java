@@ -52,6 +52,9 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
     private MyReceiver receiver;
     private AudioManager audioManager;
 
+    //是否从ListPager中传来的请求
+    private boolean isLocalList;
+
     private int curVolume;
     private int maxVolume;
 
@@ -72,6 +75,9 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
             if(iService != null){
                 try {
                     if(!notification){
+                        if(isLocalList){
+                            iService.changeToLocalList();
+                        }
                         iService.openAudio(position);
                     }else {
                         //此处是主线程
@@ -156,8 +162,9 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
 
     private void getData() {
         notification = getIntent().getBooleanExtra("Notification",false);
+        isLocalList = getIntent().getBooleanExtra("isLocalList",true);
         if(!notification){
-            position = getIntent().getIntExtra("position",0);
+            position = getIntent().getIntExtra("songPosition",0);
         }
         //进入播放页面如果不点击选择，则默认position 是 0
     }

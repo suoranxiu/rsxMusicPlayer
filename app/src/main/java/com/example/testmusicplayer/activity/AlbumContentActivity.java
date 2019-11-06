@@ -1,14 +1,21 @@
 package com.example.testmusicplayer.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -16,16 +23,18 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.example.testmusicplayer.IMusicPlayerService;
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.adapter.AlbumContentAdapter;
 import com.example.testmusicplayer.domain.Album;
 import com.example.testmusicplayer.domain.MediaItem;
+import com.example.testmusicplayer.service.MusicPlayerService;
 import com.example.testmusicplayer.utils.AlbumArt;
 import com.example.testmusicplayer.utils.Utils;
 
 import java.util.ArrayList;
 
-public class AlbumContentActivity extends Activity implements View.OnClickListener {
+public class AlbumContentActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     private LinearLayout ly_albumContent;
     private ImageView iv_album_content;
@@ -36,13 +45,51 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
     private ListView lv_song_albumContent;
 
 
-    private int position;
+    private int albumPosition;
+    private int songPosition;
 
     private ArrayList<Album> albumList;
 
     private int totalTime;
     private int totalNums;
     private Utils utils = new Utils();
+    private IMusicPlayerService iService;//服务的代理类，通过它可以调用服务类方法
+    private ServiceConnection con = new ServiceConnection() {
+        /**
+         * 当连接成功的时候回调此方法
+         * @param name
+         * @param iBinder
+         */
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder iBinder) {
+            Log.e("Tag","onServiceConnected!");
+            iService = IMusicPlayerService.Stub.asInterface(iBinder);
+            if(iService != null){
+                try {
+                    iService.changeToALbumList(albumPosition);
+                    iService.openAudio(songPosition);
+
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        /**
+         * 当断开连接的时候回调这个方法
+         * @param name
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            if(iService != null){
+                try {
+                    iService.stop();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +114,7 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
         lv_song_albumContent = (ListView)findViewById(R.id.lv_song_albumContent);
 
         ly_return_albumContent.setOnClickListener(this);
+        lv_song_albumContent.setOnItemClickListener(this);
     }
 
     @Override
@@ -77,11 +125,25 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
         }
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        songPosition = position;
+        Log.e("click"," "+position);
+        bindStartService(songPosition);
+    }
+    private void bindStartService(int songPosition) {
+        Intent intent = new Intent(this, MusicPlayerService.class);
+        intent.putExtra("isLocalList",false);
+        intent.putExtra("songPosition",songPosition);
+        intent.setAction(MusicPlayerService.OPENAUDIO);
+        bindService(intent,con, Context.BIND_AUTO_CREATE);
+        startService(intent);//不至于实例化多个服务
+    }
     public void getPos(){
 
         Intent intent = getIntent();
 
-        position = intent.getIntExtra("position",0);
+        albumPosition = intent.getIntExtra("position",0);
 
     }
 
@@ -149,7 +211,7 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
 
     public void initData(){
 
-        Album album = albumList.get(position);
+        Album album = albumList.get(albumPosition);
 
         iv_album_content.setImageBitmap(album.getAlbumArt().bmp);
         ly_albumContent.setBackground(new BitmapDrawable(album.getAlbumArt().blurBitmap(20,4)));
@@ -161,10 +223,15 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
         AlbumContentAdapter albumContentAdapter = new AlbumContentAdapter(this,album.getAlbumMap());
         lv_song_albumContent.setAdapter(albumContentAdapter);
 
+
     }
 
     @Override
     protected void onDestroy() {
+        if (con != null){
+            unbindService(con);
+            con = null;
+        }
         super.onDestroy();
     }
 

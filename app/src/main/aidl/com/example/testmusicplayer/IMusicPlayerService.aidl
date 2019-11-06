@@ -76,4 +76,15 @@ interface IMusicPlayerService {
      * @param position
      */
     void seekTo(int position);
+
+    /**
+     * 设置播放列表为专辑列表
+     */
+    void changeToALbumList(int albumPosition);
+
+    /**
+     * 设置播放列表为所有本地歌曲的列表
+     */
+    void changeToLocalList();
+
 }

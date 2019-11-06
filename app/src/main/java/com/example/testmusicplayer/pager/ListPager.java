@@ -90,7 +90,8 @@ public class ListPager extends BasePager implements AdapterView.OnItemClickListe
          * 调用自己的播放器--显示Intent
          */
         Intent intent = new Intent(context, AudioPlayerActivity.class);
-        intent.putExtra("position",position);
+        intent.putExtra("songPosition",position);
+        intent.putExtra("isLocalList",true);
         context.startActivity(intent);
 
     }
