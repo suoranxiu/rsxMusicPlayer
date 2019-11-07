@@ -53,6 +53,8 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
     private int totalTime;
     private int totalNums;
     private Utils utils = new Utils();
+
+    private boolean onBinded = false;
     private IMusicPlayerService iService;//服务的代理类，通过它可以调用服务类方法
     private ServiceConnection con = new ServiceConnection() {
         /**
@@ -129,7 +131,17 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         songPosition = position;
         Log.e("click"," "+position);
-        bindStartService(songPosition);
+        if(!onBinded){
+            bindStartService(songPosition);
+        }else {
+            try {
+                iService.openAudio(songPosition);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
     private void bindStartService(int songPosition) {
         Intent intent = new Intent(this, MusicPlayerService.class);
@@ -138,6 +150,7 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
         intent.setAction(MusicPlayerService.OPENAUDIO);
         bindService(intent,con, Context.BIND_AUTO_CREATE);
         startService(intent);//不至于实例化多个服务
+        onBinded = true;
     }
     public void getPos(){
 
@@ -228,9 +241,9 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
 
     @Override
     protected void onDestroy() {
-        if (con != null){
+        if (onBinded){
             unbindService(con);
-            con = null;
+            onBinded = false;
         }
         super.onDestroy();
     }
