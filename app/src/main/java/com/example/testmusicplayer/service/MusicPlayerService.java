@@ -160,6 +160,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
             musicPlayerService.changeToLocalList();
         }
 
+        @Override
+        public int getAudioSessionId() throws RemoteException {
+            return musicPlayerService.getAudioSessionId();
+        }
+
 
     };
 
@@ -527,6 +532,13 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         playList = mediaItems;
     }
 
+    /**
+     * 返回当前的播放器对象session_id
+     * @return
+     */
+    private int getAudioSessionId(){
+        return mediaPlayer.getAudioSessionId();
+    }
 
     //播放器监听处理
     @Override

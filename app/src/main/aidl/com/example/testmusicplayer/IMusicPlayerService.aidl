@@ -2,6 +2,7 @@
 package com.example.testmusicplayer;
 
 // Declare any non-default types here with import statements
+//import android.media.MediaPlayer;
 
 interface IMusicPlayerService {
     /**
@@ -86,5 +87,11 @@ interface IMusicPlayerService {
      * 设置播放列表为所有本地歌曲的列表
      */
     void changeToLocalList();
+
+    /**
+     * 返回当前的播放器对象
+     * @return
+     */
+    int getAudioSessionId();
 
 }

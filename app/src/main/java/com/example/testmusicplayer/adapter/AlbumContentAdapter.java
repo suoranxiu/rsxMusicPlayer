@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.domain.MediaItem;
+import com.example.testmusicplayer.view.BaseVisualizerView;
 
 import java.util.Map;
 
@@ -45,6 +46,7 @@ public class AlbumContentAdapter extends BaseAdapter {
             convertView = View.inflate(context, R.layout.item_albumcontent,null);
             viewHolder.tv_id_song_abContent = (TextView)convertView.findViewById(R.id.tv_id_song_abContent);
             viewHolder.tv_songName_abContent = (TextView)convertView.findViewById(R.id.tv_songName_abContent);
+            viewHolder.baseVisualizerView = (BaseVisualizerView)convertView.findViewById(R.id.baseVisualizerView_item_abContent);
             convertView.setTag(viewHolder);
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -60,8 +62,9 @@ public class AlbumContentAdapter extends BaseAdapter {
         return convertView;
     }
 
-    static class ViewHolder{
-        TextView tv_id_song_abContent;
-        TextView tv_songName_abContent;
+    public static class ViewHolder{
+        public TextView tv_id_song_abContent;
+        public TextView tv_songName_abContent;
+        public BaseVisualizerView baseVisualizerView;
     }
 }

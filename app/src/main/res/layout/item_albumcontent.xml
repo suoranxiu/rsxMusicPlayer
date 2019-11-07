@@ -19,14 +19,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <TextView
-                android:id="@+id/tv_songName_abContent"
-                android:layout_width="wrap_content"
-                android:layout_height="22sp"
-                android:layout_marginLeft="10dp"
-                android:textColor="#ffffff"
-                android:textSize="16sp"
-                android:text="Song"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tv_songName_abContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24sp"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp"
+                    android:text="Song"/>
+                <com.example.testmusicplayer.view.BaseVisualizerView
+                    android:id="@+id/baseVisualizerView_item_abContent"
+                    android:layout_width="26sp"
+                    android:layout_height="24sp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="10dp"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+
             <View
                 android:layout_marginTop="11dp"
                 android:layout_width="match_parent"

@@ -1,13 +1,16 @@
 package com.example.testmusicplayer.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -31,6 +34,7 @@ import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.service.MusicPlayerService;
 import com.example.testmusicplayer.utils.AlbumArt;
 import com.example.testmusicplayer.utils.Utils;
+import com.example.testmusicplayer.view.BaseVisualizerView;
 
 import java.util.ArrayList;
 
@@ -43,7 +47,7 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
     private TextView tv_album_info;
     private LinearLayout ly_return_albumContent;
     private ListView lv_song_albumContent;
-
+    private BaseVisualizerView baseVisualizerView;
 
     private int albumPosition;
     private int songPosition;
@@ -53,6 +57,8 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
     private int totalTime;
     private int totalNums;
     private Utils utils = new Utils();
+    private Visualizer visualizer;
+
 
     private boolean onBinded = false;
     private IMusicPlayerService iService;//服务的代理类，通过它可以调用服务类方法
@@ -101,6 +107,7 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
         getPos();
         getData();
         initData();
+        initReceiver();
 
     }
 
@@ -114,6 +121,8 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
 
         ly_return_albumContent = (LinearLayout)findViewById(R.id.ly_return_albumContent);
         lv_song_albumContent = (ListView)findViewById(R.id.lv_song_albumContent);
+
+        baseVisualizerView = (BaseVisualizerView)findViewById(R.id.baseVisualizerView_item_abContent);
 
         ly_return_albumContent.setOnClickListener(this);
         lv_song_albumContent.setOnItemClickListener(this);
@@ -141,8 +150,9 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
             }
         }
 
-
     }
+
+
     private void bindStartService(int songPosition) {
         Intent intent = new Intent(this, MusicPlayerService.class);
         intent.putExtra("isLocalList",false);
@@ -276,6 +286,51 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
     }
     public void getTotalNums(Album album){
         totalNums = album.getAlbumMap().size();
+    }
+
+    private void setUpVisualizer(){
+
+        try {
+            int audioSessionid = iService.getAudioSessionId();
+            visualizer = new Visualizer(audioSessionid);
+            visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+            baseVisualizerView.setVisualizer(visualizer);
+            visualizer.setEnabled(true);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void updateItemView(){
+
+        View listview = lv_song_albumContent.getChildAt(songPosition);
+        AlbumContentAdapter.ViewHolder viewHolder = (AlbumContentAdapter.ViewHolder)listview.getTag();
+        viewHolder.baseVisualizerView.setVisibility(View.VISIBLE);
+        setUpVisualizer();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(visualizer != null){
+            visualizer.release();
+        }
+    }
+
+
+    private void initReceiver(){
+        MyReceiver receiver = new MyReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MusicPlayerService.PLAYED);
+        registerReceiver(receiver,intentFilter);
+    }
+    class MyReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateItemView();
+        }
     }
 
 }
