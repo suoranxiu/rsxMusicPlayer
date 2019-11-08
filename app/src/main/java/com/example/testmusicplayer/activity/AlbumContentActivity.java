@@ -33,6 +33,7 @@ import com.example.testmusicplayer.domain.Album;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.service.MusicPlayerService;
 import com.example.testmusicplayer.utils.AlbumArt;
+import com.example.testmusicplayer.utils.Grant;
 import com.example.testmusicplayer.utils.Utils;
 import com.example.testmusicplayer.view.BaseVisualizerView;
 
@@ -59,7 +60,7 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
     private Utils utils = new Utils();
     private Visualizer visualizer;
 
-
+    private MyReceiver receiver;
     private boolean onBinded = false;
     private IMusicPlayerService iService;//服务的代理类，通过它可以调用服务类方法
     private ServiceConnection con = new ServiceConnection() {
@@ -122,7 +123,7 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
         ly_return_albumContent = (LinearLayout)findViewById(R.id.ly_return_albumContent);
         lv_song_albumContent = (ListView)findViewById(R.id.lv_song_albumContent);
 
-        baseVisualizerView = (BaseVisualizerView)findViewById(R.id.baseVisualizerView_item_abContent);
+//        baseVisualizerView = (BaseVisualizerView)findViewById(R.id.baseVisualizerView_item_abContent);
 
         ly_return_albumContent.setOnClickListener(this);
         lv_song_albumContent.setOnItemClickListener(this);
@@ -149,6 +150,8 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
                 e.printStackTrace();
             }
         }
+
+//        updateItemView();
 
     }
 
@@ -251,6 +254,9 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
 
     @Override
     protected void onDestroy() {
+        if(receiver != null){
+            unregisterReceiver(receiver);
+            receiver = null; }
         if (onBinded){
             unbindService(con);
             onBinded = false;
@@ -288,14 +294,16 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
         totalNums = album.getAlbumMap().size();
     }
 
-    private void setUpVisualizer(){
+    private void setUpVisualizer(BaseVisualizerView view){
 
         try {
-            int audioSessionid = iService.getAudioSessionId();
-            visualizer = new Visualizer(audioSessionid);
-            visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-            baseVisualizerView.setVisualizer(visualizer);
-            visualizer.setEnabled(true);
+            if(Grant.isGrantRecordAudio(this)){
+                int audioSessionid = iService.getAudioSessionId();
+                visualizer = new Visualizer(audioSessionid);
+                visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+                view.setVisualizer(visualizer);
+                visualizer.setEnabled(true);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -304,10 +312,11 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
 
     private void updateItemView(){
 
-        View listview = lv_song_albumContent.getChildAt(songPosition);
-        AlbumContentAdapter.ViewHolder viewHolder = (AlbumContentAdapter.ViewHolder)listview.getTag();
-        viewHolder.baseVisualizerView.setVisibility(View.VISIBLE);
-        setUpVisualizer();
+        View view = lv_song_albumContent.getChildAt(songPosition);
+        AlbumContentAdapter.ViewHolder viewHolder = (AlbumContentAdapter.ViewHolder)view.getTag();
+        baseVisualizerView = viewHolder.baseVisualizerView;
+        baseVisualizerView.setVisibility(View.VISIBLE);
+        setUpVisualizer(baseVisualizerView);
     }
 
     @Override
@@ -320,16 +329,18 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
 
 
     private void initReceiver(){
-        MyReceiver receiver = new MyReceiver();
+        receiver = new MyReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MusicPlayerService.PLAYED);
         registerReceiver(receiver,intentFilter);
     }
+
     class MyReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             updateItemView();
+//            Log.e("abContent","received");
         }
     }
 

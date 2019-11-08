@@ -18,4 +18,15 @@ public class Grant {
         }
         return true;
     }
+
+    public static boolean isGrantRecordAudio(Activity activity){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                activity.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
+            activity.requestPermissions(new String[]{
+                    Manifest.permission.RECORD_AUDIO,
+            },1);
+            return false;
+        }
+        return true;
+    }
 }

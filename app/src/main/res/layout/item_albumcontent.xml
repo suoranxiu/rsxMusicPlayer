@@ -32,10 +32,10 @@
                     android:text="Song"/>
                 <com.example.testmusicplayer.view.BaseVisualizerView
                     android:id="@+id/baseVisualizerView_item_abContent"
-                    android:layout_width="26sp"
-                    android:layout_height="24sp"
-                    android:layout_alignParentEnd="true"
+                    android:layout_width="40dp"
+                    android:layout_height="26dp"
                     android:layout_marginRight="10dp"
+                    android:layout_alignParentEnd="true"
                     android:visibility="gone"/>
             </RelativeLayout>
 

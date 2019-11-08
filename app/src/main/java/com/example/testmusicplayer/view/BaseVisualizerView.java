@@ -12,10 +12,10 @@ import android.view.View;
 
 public class BaseVisualizerView extends View implements Visualizer.OnDataCaptureListener{
 
-    private static final int DN_W = 480;
-    private static final int DN_H = 160;
-    private static final int DN_SL =14;
-    private static final int DN_SW = 6;
+    private static final int DN_W = 200;//view宽度与单个音频块占比 - 正常480 需微调
+    private static final int DN_H = 160;//view高度与单个音频块占比
+    private static final int DN_SL =5;//单个音频块宽度
+    private static final int DN_SW = 25;//单个音频块高度
 
     private int hgap = 0;
     private int vgap = 0;
@@ -26,7 +26,7 @@ public class BaseVisualizerView extends View implements Visualizer.OnDataCapture
     /**
      * It is the max level.
      */
-    protected final static int MAX_LEVEL = 13;
+    protected final static int MAX_LEVEL = 50;
 
     /**
      * It is the cylinder number.
@@ -63,7 +63,7 @@ public class BaseVisualizerView extends View implements Visualizer.OnDataCapture
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
 //        mPaint.setColor(Color.YELLOW);
-        mPaint.setColor(0xd3217b);
+        mPaint.setColor(0xffd3217b);
         mPaint.setStrokeJoin(Join.ROUND);
         mPaint.setStrokeCap(Cap.ROUND);
     }
