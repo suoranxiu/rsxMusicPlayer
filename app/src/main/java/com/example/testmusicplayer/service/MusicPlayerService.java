@@ -39,6 +39,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     //broadcast 的action
     public static final String OPENAUDIO = "com.example.musicplayer_OPENAUDIO";
     public static final String PLAYED = "com.example.musicplayer_PLAYED";
+    public static final String PAUSED = "com.example.musicplayer_PAUSED";
 
     //播放模式
     public static final int LOOP = 1;
@@ -326,6 +327,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     private void pause(){
         mediaPlayer.pause();
+        notifyChange(MusicPlayerService.PAUSED);
 
     }
     private void stop(){

@@ -30,6 +30,7 @@ import com.example.testmusicplayer.pager.ListPager;
 import com.example.testmusicplayer.pager.SettingPager;
 import com.example.testmusicplayer.service.MusicPlayerService;
 import com.example.testmusicplayer.utils.ReplaceFragment;
+import com.example.testmusicplayer.view.MusicButton;
 
 import java.util.ArrayList;
 
@@ -42,6 +43,7 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
     private RadioButton rb_artist;
     private RadioButton rb_setting;
     private ImageView iv_music_player;
+    private MusicButton music_btn_rotation;
     private boolean isPlaying = false;
 
     /**
@@ -58,11 +60,14 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
 
         fl_main_content = (FrameLayout)findViewById(R.id.fl_main_content);
         rg_bottom_tag = (RadioGroup)findViewById(R.id.rg_bottom_tag);
-        iv_music_player = (ImageView)findViewById(R.id.iv_music_player);
+
         rb_list = (RadioButton)findViewById(R.id.rb_list);
         rb_album = (RadioButton)findViewById(R.id.rb_album);
         rb_artist = (RadioButton)findViewById(R.id.rb_artist);
         rb_setting = (RadioButton)findViewById(R.id.rb_setting);
+
+        music_btn_rotation = (MusicButton)findViewById(R.id.music_btn_rotation);
+        iv_music_player = (ImageView)findViewById(R.id.iv_music_player);
 
         setImageSize(80);
 
@@ -75,7 +80,7 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
 
         rg_bottom_tag.check(R.id.rb_list);//默认选中播放列表
 
-        iv_music_player.setOnClickListener(this);
+        music_btn_rotation.setOnClickListener(this);
 
         initReceiver();
     }
@@ -147,29 +152,41 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
 
     @Override
     public void onClick(View v) {
-        if(isPlaying){
-            Intent intent = new Intent(this,AudioPlayerActivity.class);
-            intent.putExtra("Notification",true);
-            startActivity(intent);
-        }
+
+        Intent intent = new Intent(this,AudioPlayerActivity.class);
+        intent.putExtra("Notification",true);
+        startActivity(intent);
+
     }
 
     private void initReceiver(){
         MyReceiver receiver = new MyReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MusicPlayerService.PLAYED);
+        intentFilter.addAction(MusicPlayerService.PAUSED);
         registerReceiver(receiver,intentFilter);
     }
     class MyReceiver extends BroadcastReceiver{
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            if(intent.getAction() == MusicPlayerService.PLAYED){
+                isPlaying = true;
+            }else if(intent.getAction() == MusicPlayerService.PAUSED){
+                isPlaying = false;
+            }
             changeLogo();
-            isPlaying = true;
         }
     }
 
     private void changeLogo(){
-        iv_music_player.setImageResource(R.drawable.music_player_icon2_press);
+        iv_music_player.setVisibility(View.GONE);
+        music_btn_rotation.setVisibility(View.VISIBLE);
+        if(isPlaying){
+            music_btn_rotation.playMusic();
+        }else{
+            music_btn_rotation.pauseMusic();
+        }
+
     }
 }

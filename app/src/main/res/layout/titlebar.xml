@@ -29,4 +29,17 @@
         android:layout_gravity="center_vertical"
         android:src ="@drawable/music_player_icon2"/>
 
+    <com.example.testmusicplayer.view.MusicButton
+        android:id="@+id/music_btn_rotation"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft ="5dp"
+        android:layout_marginRight="8dp"
+        android:layout_gravity="center_vertical"
+        android:src ="@drawable/music_player_icon2_press"
+        android:visibility="gone"/>
+
+
+
+
 </com.example.testmusicplayer.view.TitleBar>
