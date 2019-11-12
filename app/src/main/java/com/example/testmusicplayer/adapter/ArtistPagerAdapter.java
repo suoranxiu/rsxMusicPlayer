@@ -8,20 +8,23 @@ import android.widget.TextView;
 
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.domain.Artist;
+import com.example.testmusicplayer.utils.ImageLoader;
 import com.example.testmusicplayer.view.CircleImageView;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ArtistPagerAdapter extends BaseAdapter {
 
-    public ArtistPagerAdapter(Context context, List<Artist> artistList) {
-        this.context = context;
-        this.artistList = artistList;
-    }
-
+    private ImageLoader imageLoader;
     private Context context;
     private List<Artist> artistList;
 
+    public ArtistPagerAdapter(Context context, List<Artist> artistList) {
+        this.context = context;
+        this.artistList = artistList;
+        this.imageLoader = new ImageLoader(context);
+    }
 
     @Override
     public int getCount() {
@@ -51,7 +54,19 @@ public class ArtistPagerAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Artist artist = artistList.get(position);
-        viewHolder.tv_name_artistPager.setText(artist.getName());
+
+        String artistName = artist.getName();
+
+        viewHolder.tv_name_artistPager.setText(artistName);
+
+        try {
+
+            imageLoader.loadImage(artistName,viewHolder.iv_portrait_artist_pager);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return convertView;
     }
 
