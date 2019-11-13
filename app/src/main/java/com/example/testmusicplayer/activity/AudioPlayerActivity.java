@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -30,23 +29,48 @@ import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.service.MusicPlayerService;
 import com.example.testmusicplayer.utils.Utils;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class AudioPlayerActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
+    @BindView(R.id.iv_album_playing)
+    ImageView iv_album_playing;
 
-    private ImageView iv_album_playing;
-    private TextView tv_name_playing;
-    private TextView tv_artist_playing;
-    private SeekBar sb_playing;
-    private TextView tv_time_playing;
-    private TextView tv_time_duration;
-    private Button btn_last_playing;
-    private Button btn_start_playing;
-    private Button btn_next_playing;
-    private SeekBar sb_volume;
-    private ImageView iv_random_playing;
-    private ImageView iv_loop_playing;
+    @BindView(R.id.tv_name_playing)
+    TextView tv_name_playing;
+
+    @BindView(R.id.tv_artist_playing)
+    TextView tv_artist_playing;
+
+    @BindView(R.id.sb_playing)
+    SeekBar sb_playing;
+
+    @BindView(R.id.tv_time_playing)
+    TextView tv_time_playing;
+
+    @BindView(R.id.tv_time_duration)
+    TextView tv_time_duration;
+
+    @BindView(R.id.btn_last_playing)
+    Button btn_last_playing;
+
+    @BindView(R.id.btn_start_playing)
+    Button btn_start_playing;
+
+    @BindView(R.id.btn_next_playing)
+    Button btn_next_playing;
+
+    @BindView(R.id.sb_volume)
+    SeekBar sb_volume;
+
+    @BindView(R.id.iv_random_playing)
+    ImageView iv_random_playing;
+
+    @BindView(R.id.iv_loop_playing)
+    ImageView iv_loop_playing;
 
     private Utils utils = new Utils();
     private MyReceiver receiver;
@@ -111,7 +135,8 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
-        findViews();
+        ButterKnife.bind(this);
+        setSeekBarListener();
         initData();
         getData();
         bindStartService();
@@ -168,38 +193,19 @@ public class AudioPlayerActivity extends Activity implements View.OnClickListene
         }
         //进入播放页面如果不点击选择，则默认position 是 0
     }
-    public void findViews(){
-        btn_start_playing = (Button)findViewById(R.id.btn_start_playing);
-        btn_last_playing = (Button)findViewById(R.id.btn_last_playing);
-        btn_next_playing = (Button)findViewById(R.id.btn_next_playing);
+    public void setSeekBarListener(){
 
-        tv_name_playing = (TextView)findViewById(R.id.tv_name_playing);
-        tv_artist_playing = (TextView)findViewById(R.id.tv_artist_playing);
-        iv_album_playing = (ImageView) findViewById(R.id.iv_album_playing);
-
-        tv_time_playing = (TextView)findViewById(R.id.tv_time_playing);
-        tv_time_duration = (TextView)findViewById(R.id.tv_time_duration);
-
-        sb_playing = (SeekBar)findViewById(R.id.sb_playing);
-        sb_volume = (SeekBar)findViewById(R.id.sb_volume);
-
-        iv_loop_playing = (ImageView)findViewById(R.id.iv_loop_playing);
-        iv_random_playing = (ImageView)findViewById(R.id.iv_random_playing);
-
-
-        btn_start_playing.setOnClickListener(this);
-        btn_last_playing.setOnClickListener(this);
-        btn_next_playing.setOnClickListener(this);
         sb_playing.setOnSeekBarChangeListener(this);
         sb_volume.setOnSeekBarChangeListener(this);
-        iv_loop_playing.setOnClickListener(this);
-        iv_random_playing.setOnClickListener(this);
-
 
     }
 
-
-    @Override
+    /**
+     * 绑定页面的点击事件
+     * @param v
+     */
+    @OnClick({R.id.btn_start_playing,R.id.btn_next_playing, R.id.btn_last_playing,R.id.iv_loop_playing,
+            R.id.iv_random_playing})
     public void onClick(View v) {
         if(v == btn_start_playing){
             if(iService != null){

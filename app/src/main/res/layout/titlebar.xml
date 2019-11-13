@@ -3,11 +3,11 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:background="#ffffff"
-    android:layout_height="55dp">
+    android:layout_height="45dp">
     <TextView
         android:id="@+id/tv_search"
         android:layout_width="wrap_content"
-        android:layout_height="33dp"
+        android:layout_height="30dp"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="8dp"
         android:layout_weight="1"
@@ -18,12 +18,12 @@
         android:gravity="center_vertical"
         android:text="Search Music"
         android:textColor="@drawable/tv_search_textcolor_selector"
-        android:textSize="17dp" />
+        android:textSize="13dp" />
 
     <ImageView
         android:id="@+id/iv_music_player"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginLeft ="5dp"
         android:layout_marginRight="8dp"
         android:layout_gravity="center_vertical"

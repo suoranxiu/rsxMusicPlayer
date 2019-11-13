@@ -77,7 +77,6 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
                 try {
                     iService.changeToALbumList(albumPosition);
                     iService.openAudio(songPosition);
-
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }

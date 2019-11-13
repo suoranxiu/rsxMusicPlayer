@@ -93,7 +93,6 @@ public class ListPager extends BasePager implements AdapterView.OnItemClickListe
         intent.putExtra("songPosition",position);
         intent.putExtra("isLocalList",true);
         context.startActivity(intent);
-
     }
 
     @Override

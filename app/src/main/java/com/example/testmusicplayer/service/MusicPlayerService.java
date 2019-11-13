@@ -179,6 +179,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
         playMode = CacheUtils.getPlaymode(this,"playmode");
 
         getDataFromLocal();
+
         if(playMode == LOOP_RANDOM){
             disorderItems();
         }
@@ -188,6 +189,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+
+        Log.e("service"," on Binded ");
         return stub;
     }
 
@@ -445,7 +448,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
             position = randomIndexList[randomIndex];
         }
 //        Log.e("playMode:",playMode+"");
-//        Log.e("next position:",position+"");
+        Log.e("next position:",position+"");
 
     }
 
@@ -472,6 +475,9 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
      * 随机生成与音乐列表长度相同的乱序索引List
      */
     private void disorderItems() {
+        if(playList == null){
+            playList = mediaItems;
+        }
         int size = playList.size();
         randomIndexList = new int[size];
         Random random = new Random();
@@ -486,6 +492,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
             lst.remove(index);
         }
         randomIndex = position;
+        Log.e("service","disorderItems  cur position "+randomIndex);
     }
 
 
@@ -525,6 +532,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnPrepare
             list.add(albumList.get(albumPosition).getAlbumMap().get(i));
         }
         playList = list;
+
+        if(playMode == LOOP_RANDOM){
+            disorderItems();
+        }
+        Log.e("service","change to album list");
     }
 
     /**

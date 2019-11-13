@@ -3,7 +3,6 @@ package com.example.testmusicplayer.activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -21,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.base.BasePager;
@@ -34,16 +34,38 @@ import com.example.testmusicplayer.view.MusicButton;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class Main2Activity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
-    private FrameLayout fl_main_content;
-    private RadioGroup rg_bottom_tag;
-    private RadioButton rb_list;
-    private RadioButton rb_album;
-    private RadioButton rb_artist;
-    private RadioButton rb_setting;
-    private ImageView iv_music_player;
-    private MusicButton music_btn_rotation;
+    @BindView(R.id.fl_main_content)
+    FrameLayout fl_main_content;
+
+    @BindView(R.id.rg_bottom_tag)
+    RadioGroup rg_bottom_tag;
+
+    @BindView(R.id.tv_search)
+    TextView tv_search;
+
+    @BindView(R.id.rb_list)
+    RadioButton rb_list;
+
+    @BindView(R.id.rb_album)
+    RadioButton rb_album;
+
+    @BindView(R.id.rb_artist)
+    RadioButton rb_artist;
+
+    @BindView(R.id.rb_setting)
+    RadioButton rb_setting;
+
+    @BindView(R.id.iv_music_player)
+    ImageView iv_music_player;
+
+    @BindView(R.id.music_btn_rotation)
+    MusicButton music_btn_rotation;
+
     private boolean isPlaying = false;
 
     /**
@@ -53,23 +75,17 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
 
     private int position;//底部栏选中的位置
 
+    private MyReceiver receiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
-        fl_main_content = (FrameLayout)findViewById(R.id.fl_main_content);
-        rg_bottom_tag = (RadioGroup)findViewById(R.id.rg_bottom_tag);
+        ButterKnife.bind(this);
 
-        rb_list = (RadioButton)findViewById(R.id.rb_list);
-        rb_album = (RadioButton)findViewById(R.id.rb_album);
-        rb_artist = (RadioButton)findViewById(R.id.rb_artist);
-        rb_setting = (RadioButton)findViewById(R.id.rb_setting);
-
-        music_btn_rotation = (MusicButton)findViewById(R.id.music_btn_rotation);
-        iv_music_player = (ImageView)findViewById(R.id.iv_music_player);
-
-        setImageSize(80);
+        setTitleSearchImgSize(50);
+        setBottomImageSize(70);
 
         basePagers = new ArrayList<>();
         basePagers.add(new ListPager(this));
@@ -85,7 +101,15 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
         initReceiver();
     }
 
-    private void setImageSize(int size) {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(receiver != null){
+            unregisterReceiver(receiver);
+        }
+    }
+
+    private void setBottomImageSize(int size) {
         Drawable listDrawable = getResources().getDrawable(R.drawable.rb_list_drawable_selector);
         listDrawable.setBounds(0, 0, size, size);
         rb_list.setCompoundDrawables(null, listDrawable, null, null);
@@ -102,6 +126,12 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
         settingDrawable.setBounds(0, 0, size, size);
         rb_setting.setCompoundDrawables(null, settingDrawable, null, null);
 
+    }
+
+    public void setTitleSearchImgSize(int size){
+        Drawable searchDrawable = getResources().getDrawable(R.drawable.tv_search_drawable_selector);
+        searchDrawable.setBounds(0,0,size,size);
+        tv_search.setCompoundDrawables(searchDrawable,null,null,null);
     }
 
     @Override
@@ -160,7 +190,7 @@ public class Main2Activity extends AppCompatActivity implements RadioGroup.OnChe
     }
 
     private void initReceiver(){
-        MyReceiver receiver = new MyReceiver();
+        receiver = new MyReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MusicPlayerService.PLAYED);
         intentFilter.addAction(MusicPlayerService.PAUSED);
