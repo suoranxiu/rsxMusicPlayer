@@ -39,15 +39,33 @@ import com.example.testmusicplayer.view.BaseVisualizerView;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class AlbumContentActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    private LinearLayout ly_albumContent;
-    private ImageView iv_album_content;
-    private TextView tv_albumName_albumContent;
-    private TextView tv_artist_albumContent;
-    private TextView tv_album_info;
-    private LinearLayout ly_return_albumContent;
-    private ListView lv_song_albumContent;
+    @BindView(R.id.ly_albumContent)
+    LinearLayout ly_albumContent;
+
+    @BindView(R.id.iv_album_content)
+    ImageView iv_album_content;
+
+    @BindView(R.id.tv_albumName_albumContent)
+    TextView tv_albumName_albumContent;
+
+    @BindView(R.id.tv_artist_albumContent)
+    TextView tv_artist_albumContent;
+
+    @BindView(R.id.tv_album_info)
+    TextView tv_album_info;
+
+    @BindView(R.id.ly_return_albumContent)
+    LinearLayout ly_return_albumContent;
+
+    @BindView(R.id.lv_song_albumContent)
+    ListView lv_song_albumContent;
+
+
     private BaseVisualizerView baseVisualizerView;
 
     private int albumPosition;
@@ -103,7 +121,8 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.album_content);
-        initView();
+        ButterKnife.bind(this);
+        setListener();
         getPos();
         getData();
         initData();
@@ -111,18 +130,7 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
 
     }
 
-    public void initView(){
-
-        ly_albumContent = (LinearLayout)findViewById(R.id.ly_albumContent);
-        iv_album_content = (ImageView)findViewById(R.id.iv_album_content);
-        tv_albumName_albumContent = (TextView)findViewById(R.id.tv_albumName_albumContent);
-        tv_artist_albumContent = (TextView)findViewById(R.id.tv_artist_albumContent);
-        tv_album_info = (TextView)findViewById(R.id.tv_album_info);
-
-        ly_return_albumContent = (LinearLayout)findViewById(R.id.ly_return_albumContent);
-        lv_song_albumContent = (ListView)findViewById(R.id.lv_song_albumContent);
-
-//        baseVisualizerView = (BaseVisualizerView)findViewById(R.id.baseVisualizerView_item_abContent);
+    public void setListener(){
 
         ly_return_albumContent.setOnClickListener(this);
         lv_song_albumContent.setOnItemClickListener(this);
@@ -150,7 +158,6 @@ public class AlbumContentActivity extends Activity implements View.OnClickListen
             }
         }
 
-//        updateItemView();
 
     }
 

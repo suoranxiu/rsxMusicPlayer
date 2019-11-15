@@ -31,8 +31,8 @@
 
     <com.example.testmusicplayer.view.MusicButton
         android:id="@+id/music_btn_rotation"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginLeft ="5dp"
         android:layout_marginRight="8dp"
         android:layout_gravity="center_vertical"

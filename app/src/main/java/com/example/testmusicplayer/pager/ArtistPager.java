@@ -23,21 +23,8 @@ import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
 import com.example.testmusicplayer.utils.Grant;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 /**
  * 本地音乐家的列表的页面

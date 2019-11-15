@@ -7,12 +7,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Gravity;
+
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.adapter.AlbumPagerAdapter;
@@ -23,7 +21,7 @@ import com.example.testmusicplayer.utils.AlbumArt;
 import com.example.testmusicplayer.utils.Grant;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * 本地音乐所述专辑列表的页面
