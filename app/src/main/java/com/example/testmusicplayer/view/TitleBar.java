@@ -1,6 +1,7 @@
 package com.example.testmusicplayer.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.testmusicplayer.R;
+import com.example.testmusicplayer.activity.SearchContentActivity;
 
 /**
  * 自定义标题栏
@@ -64,9 +66,11 @@ public class TitleBar extends LinearLayout implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.tv_search){
-            Toast.makeText(context,"search music",0).show();
+//            Toast.makeText(context,"search music",0).show();
+            Intent intent = new Intent(context,SearchContentActivity.class);
+            context.startActivity(intent);
         }else if(v.getId() == R.id.iv_music_player){
-            Toast.makeText(context,"music player",0).show();
+//            Toast.makeText(context,"music player",0).show();
         }
     }
 }
