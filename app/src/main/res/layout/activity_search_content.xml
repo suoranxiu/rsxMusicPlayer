@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".activity.SearchContentActivity">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:paddingRight="4dp"
