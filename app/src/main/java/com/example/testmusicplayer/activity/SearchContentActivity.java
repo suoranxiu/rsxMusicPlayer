@@ -24,10 +24,10 @@ import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
 import com.example.testmusicplayer.utils.FilterListener;
 import com.example.testmusicplayer.utils.Grant;
-import com.example.testmusicplayer.utils.SearchFilter;
 import com.example.testmusicplayer.view.SearchEditText;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,7 +39,6 @@ public class SearchContentActivity extends AppCompatActivity {
 
     private ArrayList<MediaItem> mediaItems;
 
-    private SearchFilter searchFilter;
 
     private FilterListener filterListener;
 
@@ -77,7 +76,7 @@ public class SearchContentActivity extends AppCompatActivity {
     }
 
     public void setAdapter(){
-        SearchSongAdapter adapter = new SearchSongAdapter(mediaItems,this);
+        SearchSongAdapter adapter = new SearchSongAdapter(mediaItems, this);
         lv_searching_songs.setAdapter(adapter);
     }
 

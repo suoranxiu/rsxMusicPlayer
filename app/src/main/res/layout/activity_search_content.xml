@@ -51,7 +51,7 @@
             android:layout_centerInParent="true"
             android:visibility="gone"
             android:textSize="20sp"
-            android:text="No data!"/>
+            android:text="No matched data!"/>
     </RelativeLayout>
 
 </LinearLayout>
