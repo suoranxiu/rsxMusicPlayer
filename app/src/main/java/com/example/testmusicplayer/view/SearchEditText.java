@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.appcompat.widget.AppCompatEditText;
 
 import com.example.testmusicplayer.R;
+import com.example.testmusicplayer.utils.OnTextChangedListener;
 
 import butterknife.ButterKnife;
 import butterknife.OnFocusChange;
@@ -63,6 +64,9 @@ public class SearchEditText extends AppCompatEditText implements View.OnFocusCha
                 //LogUtil.d("isTouchRight： " + isTouchRight);
                 if (isTouchRight) {
                     setText("");
+                    if(mOnTextChangedListener != null){
+                        mOnTextChangedListener.clearSearchingList();
+                    }
                 }
             }
         }
@@ -116,19 +120,11 @@ public class SearchEditText extends AppCompatEditText implements View.OnFocusCha
     }
 
 
-    //文本改变接口监听
-    public interface OnTextChangedListener {
-        void beforeTextChanged(CharSequence s, int start, int count, int after);
-
-        void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter);
-
-        void afterTextChanged(Editable s);
-    }
-
     private OnTextChangedListener mOnTextChangedListener;
 
     public void setOnTextChangedListener(OnTextChangedListener onTextChangedListener) {
         this.mOnTextChangedListener = onTextChangedListener;
     }
+
 
 }

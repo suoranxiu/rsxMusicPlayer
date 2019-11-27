@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.ListView;
@@ -24,6 +26,7 @@ import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
 import com.example.testmusicplayer.utils.FilterListener;
 import com.example.testmusicplayer.utils.Grant;
+import com.example.testmusicplayer.utils.OnTextChangedListener;
 import com.example.testmusicplayer.view.SearchEditText;
 
 import java.util.ArrayList;
@@ -40,13 +43,11 @@ public class SearchContentActivity extends AppCompatActivity {
     private ArrayList<MediaItem> mediaItems;
 
 
-    private FilterListener filterListener;
-
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            setAdapter();
+            initTextListener();
         }
     };
 
@@ -64,22 +65,54 @@ public class SearchContentActivity extends AppCompatActivity {
 
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_content);
         ButterKnife.bind(this);
         getLocalData();
-
     }
 
-    public void setAdapter(){
+
+    public void showSongsList(){
+
+        lv_searching_songs.setVisibility(View.VISIBLE);
+        //获得输入的内容
+        String str = et_search.getText().toString().trim();
+        Log.e("searching key",str);
+        //设置adapter
         SearchSongAdapter adapter = new SearchSongAdapter(mediaItems, this);
+        //adapter根据关键词过滤结果
+        adapter.getFilter().filter(str);
         lv_searching_songs.setAdapter(adapter);
     }
 
+    public void initTextListener(){
+
+        et_search.setOnTextChangedListener(new OnTextChangedListener() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
+                showSongsList();
+                Log.e("searching et","onTextChanged");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Log.e("searching et","afterTextChanged");
+            }
+
+            @Override
+            public void clearSearchingList() {
+                lv_searching_songs.setVisibility(View.GONE);
+                Log.e("searching et","clearSearchingList");
+            }
+        });
+    }
 
 
     @OnClick({R.id.tv_cancel_searching})

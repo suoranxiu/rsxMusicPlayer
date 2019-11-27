@@ -43,7 +43,8 @@
         <ListView
             android:id="@+id/lv_searching_songs"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:divider="@null"/>
         <TextView
             android:id="@+id/tv_search_nodata"
             android:layout_width="wrap_content"
