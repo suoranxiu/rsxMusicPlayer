@@ -36,7 +36,34 @@
             android:textColor="#d3217b"
             android:textSize="16sp"/>
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ly_search_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="History"/>
+        <View
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:background="#000000"
+            android:layout_alignParentBottom="true"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.example.testmusicplayer.view.ListViewForScrollView
+                android:id="@+id/lv_search_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </ScrollView>
 
+
+    </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
