@@ -18,6 +18,7 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -28,7 +29,6 @@ import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.adapter.SearchSongAdapter;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.utils.AlbumArt;
-import com.example.testmusicplayer.utils.FilterListener;
 import com.example.testmusicplayer.utils.Grant;
 import com.example.testmusicplayer.utils.OnTextChangedListener;
 import com.example.testmusicplayer.utils.RecordsSqliteHelper;
@@ -42,6 +42,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemClick;
 
 
 public class SearchContentActivity extends AppCompatActivity {
@@ -92,9 +93,13 @@ public class SearchContentActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         getLocalData();
         initLocalDB();
-
     }
 
+    @OnItemClick(R.id.lv_search_history)
+    public void OnItemClick(AdapterView<?> parent, View view, int position, long id){
+        String ketWord = (String)((TextView)view.findViewById(R.id.tv_search_record_word)).getText();
+        et_search.setText(ketWord);
+    }
 
     public void showSongsList(){
 
@@ -316,8 +321,6 @@ public class SearchContentActivity extends AppCompatActivity {
         simpleCursorAdapter.notifyDataSetChanged();
         simpleCursorAdapter.swapCursor(cursor);
     }
-
-
 
 }
 
