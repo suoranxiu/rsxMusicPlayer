@@ -10,10 +10,10 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class RecordsSqliteHelper extends SQLiteOpenHelper {
 
-    private String CREATE_RECORDS_TABLE = "create table table_records(_id integer primary key autoincrement,username varchar(200),password varchar(200))";
+    private String CREATE_RECORDS_TABLE = "create table table_records(_id integer primary key autoincrement,keyword varchar(200))";
 
     public RecordsSqliteHelper(Context context) {
-        super(context, "records_db", null, 1);
+        super(context, "records_DB", null, 1);
     }
 
     @Override

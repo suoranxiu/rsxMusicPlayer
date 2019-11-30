@@ -144,7 +144,7 @@ public class SearchContentActivity extends AppCompatActivity {
             public void clearSearchingList() {
                 lv_searching_songs.setVisibility(View.GONE);
                 ly_search_history.setVisibility(View.VISIBLE);
-                cursor = recordsSqliteHelper.getReadableDatabase().rawQuery("select * from table_records", null);
+                cursor = recordsSqliteHelper.getReadableDatabase().rawQuery("select * from table_records order by _id desc", null);
                 refreshRecordsListView();
                 Log.e("searching et","clearSearchingList");
             }
@@ -239,9 +239,9 @@ public class SearchContentActivity extends AppCompatActivity {
         //初始化本地数据库
         initRecords();
         //尝试从保存查询纪录的数据库中获取历史纪录并显示
-        cursor = recordsSqliteHelper.getReadableDatabase().rawQuery("select * from table_records", null);
+        cursor = recordsSqliteHelper.getReadableDatabase().rawQuery("select * from table_records order by _id desc", null);
         simpleCursorAdapter = new SimpleCursorAdapter(this, R.layout.item_search_history, cursor
-                , new String[]{"username", "password"}, new int[]{R.id.tv_search_record_word, android.R.id.text2}
+                , new String[]{"keyword"}, new int[]{R.id.tv_search_record_word}
                 , CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         lv_search_history.setAdapter(simpleCursorAdapter);
     }
@@ -253,8 +253,8 @@ public class SearchContentActivity extends AppCompatActivity {
         deleteData();
         db_search = searchSqliteHelper.getWritableDatabase();
         for (int i = 0; i < 20; i++) {
-            db_search.execSQL("insert into table_search values(null,?,?)",
-                    new String[]{"name" + i + 10, "pass" + i + "word"});
+            db_search.execSQL("insert into table_search values(null,?)",
+                    new String[]{"keyword" + i + 10});
         }
         db_search.close();
     }
@@ -277,7 +277,7 @@ public class SearchContentActivity extends AppCompatActivity {
     private void insertRecords(String str) {
         if (!hasDataRecords(str)) {
             db_records = recordsSqliteHelper.getWritableDatabase();
-            db_records.execSQL("insert into table_records values(null,?,?)", new String[]{str, ""});
+            db_records.execSQL("insert into table_records values(null,?)", new String[]{str});
             db_records.close();
         }
     }
@@ -289,7 +289,7 @@ public class SearchContentActivity extends AppCompatActivity {
      */
     private boolean hasDataRecords(String str) {
         cursor = recordsSqliteHelper.getReadableDatabase()
-                .rawQuery("select _id,username from table_records where username = ?"
+                .rawQuery("select _id,keyword from table_records where keyword = ?"
                         , new String[]{str});
 
         return cursor.moveToNext();
@@ -300,7 +300,7 @@ public class SearchContentActivity extends AppCompatActivity {
      */
     private void queryData(String searchData) {
         cursor = searchSqliteHelper.getReadableDatabase()
-                .rawQuery("select * from table_search where username like '%" + searchData + "%' or password like '%" + searchData + "%'", null);
+                .rawQuery("select * from table_search where keyword like '%" + searchData + "%'", null);
         refreshRecordsListView();
     }
 
