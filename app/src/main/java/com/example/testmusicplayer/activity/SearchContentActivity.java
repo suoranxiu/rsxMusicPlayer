@@ -82,6 +82,8 @@ public class SearchContentActivity extends AppCompatActivity {
     @BindView(R.id.lv_search_history)
     ListViewForScrollView lv_search_history;
 
+    @BindView(R.id.tv_clear_records)
+    TextView tv_clear_records;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,10 +147,12 @@ public class SearchContentActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({R.id.tv_cancel_searching})
+    @OnClick({R.id.tv_cancel_searching,R.id.tv_clear_records})
     public void onClick(View v){
         if(v == tv_cancel_searching){
             finish();
+        }else if(v == tv_clear_records){
+            deleteAllReocords();
         }
     }
 
