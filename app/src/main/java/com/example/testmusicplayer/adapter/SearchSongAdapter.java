@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.domain.MediaItem;
-import com.example.testmusicplayer.utils.FilterListener;
+import com.example.testmusicplayer.domain.SearchingSongItem;
 
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.List;
 public class SearchSongAdapter extends BaseAdapter implements Filterable {
 
     private List<MediaItem> mediaItemList;
-    private List<MediaItem> resultList = new ArrayList<>();
+    private List<SearchingSongItem> resultList = new ArrayList<>();
 
     private Context context;
     private SearchFilter filter ;// 创建MyFilter对象
@@ -58,11 +58,12 @@ public class SearchSongAdapter extends BaseAdapter implements Filterable {
             viewHolder.tv_name_searchSong = (TextView) convertView.findViewById(R.id.tv_name_searchSong);
             viewHolder.tv_artist_searchSong = (TextView)convertView.findViewById(R.id.tv_artist_searchSong);
             viewHolder.tv_albumName_searchSong = (TextView)convertView.findViewById(R.id.tv_albumName_searchSong);
+            convertView.setTag(R.id.tag_view_holder,viewHolder);
         }else {
-            viewHolder = (ViewHolder) convertView.getTag();
+            viewHolder = (ViewHolder) convertView.getTag(R.id.tag_view_holder);
         }
 
-        MediaItem mediaItem = resultList.get(position);
+        MediaItem mediaItem = resultList.get(position).getMediaItem();
 
         String fileName = mediaItem.getName();
         String songName = fileName.substring(fileName.lastIndexOf("-")+2,fileName.lastIndexOf("."));
@@ -71,6 +72,8 @@ public class SearchSongAdapter extends BaseAdapter implements Filterable {
         viewHolder.tv_name_searchSong.setText(songName);
         viewHolder.tv_artist_searchSong.setText(mediaItem.getArtist());
         viewHolder.tv_albumName_searchSong.setText(mediaItem.getAlbum());
+
+        convertView.setTag(R.id.tag_listIndex,resultList.get(position).getListIndex());//用于存放当前搜索结果歌曲在整个list中的index
 
         return convertView;
     }
@@ -96,13 +99,14 @@ public class SearchSongAdapter extends BaseAdapter implements Filterable {
 
             FilterResults results = new FilterResults();// 创建FilterResults对象
 
-            List<MediaItem> resultList = new ArrayList<>();// 创建集合保存过滤后的数据
+            List<SearchingSongItem> resultList = new ArrayList<>();// 创建集合保存过滤后的数据
 
             for(MediaItem s: mediaItemList){
                 // 过滤规则的具体实现
                 if(checkConstraint(s,constraint)){
                     // 规则匹配的话就往集合中添加该数据
-                    resultList.add(s);
+                    SearchingSongItem songItem = new SearchingSongItem(s,mediaItemList.indexOf(s));
+                    resultList.add(songItem);
                 }
             }
 
@@ -120,7 +124,7 @@ public class SearchSongAdapter extends BaseAdapter implements Filterable {
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             // 获取过滤后的数据
-            resultList = (List<MediaItem>) results.values;
+            resultList = (List<SearchingSongItem>) results.values;
 
 //            //如果接口对象不为空，那么调用接口中的方法获取过滤后的数据，具体的实现在new这个接口的时候重写的方法里执行
 //            if(listener != null){

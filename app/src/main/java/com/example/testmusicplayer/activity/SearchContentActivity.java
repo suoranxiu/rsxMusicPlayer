@@ -5,14 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
+import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.util.Log;
@@ -25,9 +31,11 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import com.example.testmusicplayer.IMusicPlayerService;
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.adapter.SearchSongAdapter;
 import com.example.testmusicplayer.domain.MediaItem;
+import com.example.testmusicplayer.service.MusicPlayerService;
 import com.example.testmusicplayer.utils.AlbumArt;
 import com.example.testmusicplayer.utils.Grant;
 import com.example.testmusicplayer.utils.OnTextChangedListener;
@@ -49,13 +57,50 @@ public class SearchContentActivity extends AppCompatActivity {
 
 
     private ArrayList<MediaItem> mediaItems;
-
+    private int songPosition;
     SimpleCursorAdapter simpleCursorAdapter;
     SearchSqliteHelper searchSqliteHelper;
     RecordsSqliteHelper recordsSqliteHelper;
     SQLiteDatabase db_search;
     SQLiteDatabase db_records;
     Cursor cursor;
+
+    private IMusicPlayerService iService;//服务的代理类，通过它可以调用服务类方法
+    private boolean onBinded = false;
+    private ServiceConnection con = new ServiceConnection() {
+        /**
+         * 当连接成功的时候回调此方法
+         * @param name
+         * @param iBinder
+         */
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder iBinder) {
+            Log.e("Tag","onServiceConnected!");
+            iService = IMusicPlayerService.Stub.asInterface(iBinder);
+            if(iService != null){
+                try {
+                    iService.openAudio(songPosition);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        /**
+         * 当断开连接的时候回调这个方法
+         * @param name
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            if(iService != null){
+                try {
+                    iService.stop();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     private Handler handler = new Handler(){
         @Override
@@ -96,9 +141,34 @@ public class SearchContentActivity extends AppCompatActivity {
     }
 
     @OnItemClick(R.id.lv_search_history)
-    public void OnItemClick(AdapterView<?> parent, View view, int position, long id){
+    public void OnItemClick0(AdapterView<?> parent, View view, int position, long id){
         String ketWord = (String)((TextView)view.findViewById(R.id.tv_search_record_word)).getText();
         et_search.setText(ketWord);
+    }
+    @OnItemClick(R.id.lv_searching_songs)
+    public void OnItemClick1(AdapterView<?> parent, View view, int position, long id){
+
+        songPosition = (int)view.getTag(R.id.tag_listIndex);
+        Log.e("click"," "+position);
+        if(!onBinded){
+            bindStartService(songPosition);
+        }else {
+            try {
+                iService.openAudio(songPosition);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void bindStartService(int songPosition) {
+        Intent intent = new Intent(this, MusicPlayerService.class);
+        intent.putExtra("isLocalList",true);
+        intent.putExtra("songPosition",songPosition);
+        intent.setAction(MusicPlayerService.OPENAUDIO);
+        bindService(intent,con, Context.BIND_AUTO_CREATE);
+        startService(intent);//不至于实例化多个服务
+        onBinded = true;
     }
 
     public void showSongsList(){

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Mnote</string>
+    <item type="id" name="tag_view_holder"></item>
+    <item type="id" name="tag_listIndex"></item>
 </resources>
