@@ -1,6 +1,7 @@
 package com.example.testmusicplayer.adapter;
 
 import android.content.Context;
+import android.text.SpannableString;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.example.testmusicplayer.R;
 import com.example.testmusicplayer.domain.MediaItem;
 import com.example.testmusicplayer.domain.SearchingSongItem;
+import com.example.testmusicplayer.utils.Utils;
 
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class SearchSongAdapter extends BaseAdapter implements Filterable {
 
     private List<MediaItem> mediaItemList;
     private List<SearchingSongItem> resultList = new ArrayList<>();
+    private String keyword;
 
     private Context context;
     private SearchFilter filter ;// 创建MyFilter对象
@@ -69,9 +72,17 @@ public class SearchSongAdapter extends BaseAdapter implements Filterable {
         String songName = fileName.substring(fileName.lastIndexOf("-")+2,fileName.lastIndexOf("."));
 
         viewHolder.iv_album_icon_searchSong.setImageBitmap(mediaItem.getAlbumArt().bmp);
-        viewHolder.tv_name_searchSong.setText(songName);
-        viewHolder.tv_artist_searchSong.setText(mediaItem.getArtist());
-        viewHolder.tv_albumName_searchSong.setText(mediaItem.getAlbum());
+
+        //显示文本，增加了与keyword匹配字符改变字体颜色
+        SpannableString songName_ = Utils.matcherSearchText(context.getColor(R.color.pink_theme),songName,keyword);
+        viewHolder.tv_name_searchSong.setText(songName_);
+
+        SpannableString artistName_ = Utils.matcherSearchText(context.getColor(R.color.pink_theme),mediaItem.getArtist(),keyword);
+        viewHolder.tv_artist_searchSong.setText(artistName_);
+
+        SpannableString albumName_ = Utils.matcherSearchText(context.getColor(R.color.pink_theme),mediaItem.getAlbum(),keyword);
+        viewHolder.tv_albumName_searchSong.setText(albumName_);
+
 
         convertView.setTag(R.id.tag_listIndex,resultList.get(position).getListIndex());//用于存放当前搜索结果歌曲在整个list中的index
 
@@ -110,6 +121,7 @@ public class SearchSongAdapter extends BaseAdapter implements Filterable {
                 }
             }
 
+            keyword = constraint.toString().trim().toLowerCase();
             results.values = resultList;
             results.count = resultList.size();
 

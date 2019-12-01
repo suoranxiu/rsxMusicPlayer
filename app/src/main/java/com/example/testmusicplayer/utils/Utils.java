@@ -2,9 +2,14 @@ package com.example.testmusicplayer.utils;
 
 import android.content.Context;
 import android.net.TrafficStats;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 
 import java.util.Formatter;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -77,6 +82,29 @@ public class Utils {
         lastTotalRxBytes = nowTotalRxBytes;
         netSpeed  = String.valueOf(speed) + " kb/s";
         return  netSpeed;
+    }
+
+    /**
+     * 正则匹配 返回值是一个SpannableString 即经过变色处理的数据
+     * @param color
+     * @param text
+     * @param keyword
+     * @return
+     */
+    public static SpannableString matcherSearchText(int color, String text, String keyword){
+        SpannableString spannableString = new SpannableString(text);
+        //条件 keyword
+        Pattern pattern = Pattern.compile(keyword);
+
+        //匹配
+        Matcher matcher = pattern.matcher(spannableString);
+        while (matcher.find()) {
+            int start = matcher.start();
+            int end = matcher.end();
+            //ForegroundColorSpan 需要new 不然也只能是部分变色
+            spannableString.setSpan(new ForegroundColorSpan(color), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return spannableString;
     }
 
 

@@ -45,7 +45,6 @@ import com.example.testmusicplayer.view.ListViewForScrollView;
 import com.example.testmusicplayer.view.SearchEditText;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
