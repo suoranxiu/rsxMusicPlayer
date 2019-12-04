@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
              public void run() {
                  //在主线程中
                  startMain2Activity();
-                 Log.e(TAG,"current_thread==="+Thread.currentThread().getName());
+//                 Log.e(TAG,"current_thread==="+Thread.currentThread().getName());
              }
          },2000);
     }
